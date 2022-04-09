@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/golangci/golangci-lint v1.45.2
+	github.com/lonepeon/golib v0.0.0-20220406191516-65e2ee52d0f6
 	golang.org/x/tools v0.1.11-0.20220316014157-77aa08bb151a
 	honnef.co/go/tools v0.3.0
 )
