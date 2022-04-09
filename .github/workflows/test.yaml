@@ -1,0 +1,124 @@
+name: test
+
+on:
+  push:
+    branches:
+      - "*"
+
+jobs:
+  ci-tools:
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "setup CI tools cache"
+        id: cache-ci-tools
+        uses: actions/cache@v2
+        with:
+          path: ci-tools
+          key: ${{ runner.os }}-ci-tools-v20220315143056
+      - name: "download assert-version binary"
+        if: steps.cache-ci-tools.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ci-tools
+          curl -Lo ci-tools/assert-version https://github.com/lonepeon/cicd/releases/download/v20220315143056/assert-version-linux-386
+          chmod u+x ci-tools/assert-version
+
+  file-generation-tests:
+    needs: ci-tools
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "checkout code"
+        uses: actions/checkout@v2
+      - name: "setup go version"
+        uses: actions/setup-go@v2
+        with:
+          go-version: "1.17.7"
+      - name: "setup CI tools cache"
+        id: cache-ci-tools
+        uses: actions/cache@v2
+        with:
+          path: ci-tools
+          key: ${{ runner.os }}-ci-tools-v20220315143056
+      - name: "assert go version"
+        run: ci-tools/assert-version go
+      - name: "assert all files are generated"
+        run: make test-generate
+
+  format-tests:
+    needs: ci-tools
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "checkout code"
+        uses: actions/checkout@v2
+      - name: "setup go version"
+        uses: actions/setup-go@v2
+        with:
+          go-version: "1.17.7"
+      - name: "setup CI tools cache"
+        id: cache-ci-tools
+        uses: actions/cache@v2
+        with:
+          path: ci-tools
+          key: ${{ runner.os }}-ci-tools-v20220315143056
+      - name: "assert go version"
+        run: ci-tools/assert-version go
+      - name: "run code format"
+        run: make test-format
+      - name: "run code lint"
+        run: make test-lint
+      - name: "run code security"
+        run: make test-security
+
+  unit-tests:
+    needs: ci-tools
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "checkout code"
+        uses: actions/checkout@v2
+      - name: "setup go version"
+        uses: actions/setup-go@v2
+        with:
+          go-version: "1.17.7"
+      - name: "setup CI tools cache"
+        id: cache-ci-tools
+        uses: actions/cache@v2
+        with:
+          path: ci-tools
+          key: ${{ runner.os }}-ci-tools-v20220315143056
+      - name: "assert go version"
+        run: ci-tools/assert-version go
+      - name: "run unit tests"
+        run: make test-unit
+
+  deployment:
+    needs:
+      - file-generation-tests
+      - format-tests
+      - unit-tests
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "checkout code"
+        uses: actions/checkout@v2
+      - name: "set current version environment variable"
+        run: echo "VERSION=$(date +'%Y%m%d%H%M%S')" >> ${GITHUB_ENV}
+      - name: "setup go version"
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.17.7'
+      - name: "setup CD tools cache"
+        id: cache-cd-tools
+        uses: actions/cache@v2
+        with:
+          path: cd-tools
+          key: ${{ runner.os }}-cd-tools-v20220315143056
+      - name: "download create-release binary"
+        if: steps.cache-cd-tools.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p cd-tools
+          curl -Lo cd-tools/create-release https://github.com/lonepeon/cicd/releases/download/v20220315143056/create-release-linux-386
+          chmod u+x cd-tools/create-release
+      - name: "build binaries"
+        run: make release
+      - name: "create release"
+        run: ./cd-tools/create-release -asset target/tlog-linux-amd64 -asset target/tlog-darwin-amd64 $VERSION main
+        env:
+          PERSONAL_TOKEN: ${{secrets.PERSONAL_TOKEN}}
