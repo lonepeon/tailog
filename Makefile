@@ -34,7 +34,7 @@ compile:
 		-o $(BUILD_FOLDER)/$(FULL_BINARY_NAME)
 
 .PHONY: test
-test: test-unit test-format test-generate test-lint test-security
+test: test-unit test-format test-lint test-security test-generate 
 
 .PHONY: test-unit
 test-unit:

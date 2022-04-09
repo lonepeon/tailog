@@ -12,38 +12,64 @@ var (
 	FieldTypeNumber FieldType = "number"
 )
 
-type Field struct {
-	name string
-
-	kind   FieldType
-	str    string
-	number float64
+type FieldString struct {
+	name  string
+	value string
 }
 
-func ScanFieldString(name string, content []byte) (Field, error) {
+type FieldNumber struct {
+	name  string
+	value float64
+}
+
+func ScanFieldString(name string, content []byte) (FieldString, error) {
 	value, err := scanString(content)
 	if err != nil {
-		return Field{}, err
+		return FieldString{}, err
 	}
 
-	return Field{name: name, kind: FieldTypeString, str: value}, nil
+	return FieldString{name: name, value: value}, nil
 }
 
-func ScanFieldNumber(name string, content []byte) (Field, error) {
+func ScanFieldNumber(name string, content []byte) (FieldNumber, error) {
 	value, err := scanNumber(content)
 	if err != nil {
-		return Field{}, err
+		return FieldNumber{}, err
 	}
 
-	return Field{name: name, kind: FieldTypeNumber, number: value}, nil
+	return FieldNumber{name: name, value: value}, nil
 }
 
-func (f Field) String() string {
-	return f.str
+func (f FieldString) Equal(s interface{}) bool {
+	value, ok := s.(string)
+	if !ok {
+		return false
+
+	}
+
+	return f.value == value
 }
 
-func (f Field) Number() float64 {
-	return f.number
+func (f FieldString) String() string {
+	return f.value
+}
+
+func (f FieldNumber) Equal(s interface{}) bool {
+	var value float64
+	switch v := s.(type) {
+	case float64:
+		value = v
+	case int:
+		value = float64(v)
+	default:
+		return false
+	}
+
+	return f.value == value
+}
+
+func (f FieldNumber) Number() float64 {
+	return f.value
 }
 
 func scanString(content []byte) (string, error) {

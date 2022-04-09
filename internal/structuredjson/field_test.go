@@ -22,6 +22,20 @@ func TestFieldStringScanError(t *testing.T) {
 	testutils.AssertContainsString(t, "value=12", err.Error(), "unexpected error message")
 }
 
+func TestFieldStringEqualSuccess(t *testing.T) {
+	field, err := structuredjson.ScanFieldString("msg", []byte(`"something"`))
+	testutils.RequireNoError(t, err, "expecting to scan the log")
+
+	testutils.AssertEqualBool(t, true, field.Equal("something"), "expecting equality")
+}
+
+func TestFieldStringEqualFailure(t *testing.T) {
+	field, err := structuredjson.ScanFieldString("msg", []byte(`"something"`))
+	testutils.RequireNoError(t, err, "expecting to scan the log")
+
+	testutils.AssertEqualBool(t, false, field.Equal("nope"), "expecting no value equality")
+}
+
 func TestFieldNumberScanSuccessInt(t *testing.T) {
 	field, err := structuredjson.ScanFieldNumber("msg", []byte(`12`))
 
@@ -41,4 +55,32 @@ func TestFieldNumberScanError(t *testing.T) {
 
 	testutils.RequireHasError(t, err, "expecting to not scan the log")
 	testutils.AssertContainsString(t, `value="boom"`, err.Error(), "unexpected error message")
+}
+
+func TestFieldNumberEqualIntSuccess(t *testing.T) {
+	field, err := structuredjson.ScanFieldNumber("msg", []byte(`12`))
+	testutils.RequireNoError(t, err, "expecting to scan the log")
+
+	testutils.AssertEqualBool(t, true, field.Equal(12), "expecting equality")
+}
+
+func TestFieldNumberEqualIntFailure(t *testing.T) {
+	field, err := structuredjson.ScanFieldNumber("msg", []byte(`12`))
+	testutils.RequireNoError(t, err, "expecting to scan the log")
+
+	testutils.AssertEqualBool(t, false, field.Equal(150), "expecting no value equality")
+}
+
+func TestFieldNumberEqualFloatSuccess(t *testing.T) {
+	field, err := structuredjson.ScanFieldNumber("msg", []byte(`12.42`))
+	testutils.RequireNoError(t, err, "expecting to scan the log")
+
+	testutils.AssertEqualBool(t, true, field.Equal(12.42), "expecting equality")
+}
+
+func TestFieldNumberEqualFloatFailure(t *testing.T) {
+	field, err := structuredjson.ScanFieldNumber("msg", []byte(`12.42`))
+	testutils.RequireNoError(t, err, "expecting to scan the log")
+
+	testutils.AssertEqualBool(t, false, field.Equal(150.12), "expecting no value equality")
 }
