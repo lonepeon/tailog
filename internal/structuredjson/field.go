@@ -20,51 +20,46 @@ type Field struct {
 	number float64
 }
 
-func NewFieldString(name string) *Field {
-	return &Field{name: name, kind: FieldTypeString}
-}
-
-func NewFieldNumber(name string) *Field {
-	return &Field{name: name, kind: FieldTypeNumber}
-}
-
-func (f *Field) Scan(content []byte) error {
-	switch f.kind {
-	case FieldTypeNumber:
-		return f.scanNumber(content)
-	case FieldTypeString:
-		return f.scanString(content)
+func ScanFieldString(name string, content []byte) (Field, error) {
+	value, err := scanString(content)
+	if err != nil {
+		return Field{}, err
 	}
 
-	return nil
+	return Field{name: name, kind: FieldTypeString, str: value}, nil
 }
 
-func (f *Field) String() string {
+func ScanFieldNumber(name string, content []byte) (Field, error) {
+	value, err := scanNumber(content)
+	if err != nil {
+		return Field{}, err
+	}
+
+	return Field{name: name, kind: FieldTypeNumber, number: value}, nil
+}
+
+func (f Field) String() string {
 	return f.str
 }
 
-func (f *Field) Number() float64 {
+func (f Field) Number() float64 {
 	return f.number
 }
 
-func (f *Field) scanString(content []byte) error {
+func scanString(content []byte) (string, error) {
 	var value string
 	if err := json.Unmarshal(content, &value); err != nil {
-		return fmt.Errorf("can't scan field (value=%s): %v", string(content), err)
+		return "", fmt.Errorf("can't scan field (value=%s): %v", string(content), err)
 	}
 
-	f.str = value
-
-	return nil
+	return value, nil
 }
 
-func (f *Field) scanNumber(content []byte) error {
+func scanNumber(content []byte) (float64, error) {
 	var value float64
 	if err := json.Unmarshal(content, &value); err != nil {
-		return fmt.Errorf("can't scan field (value=%s): %v", string(content), err)
+		return 0, fmt.Errorf("can't scan field (value=%s): %v", string(content), err)
 	}
 
-	f.number = value
-
-	return nil
+	return value, nil
 }
