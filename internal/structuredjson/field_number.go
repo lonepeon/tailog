@@ -21,6 +21,10 @@ func ScanFieldNumber(name string, content []byte) (FieldNumber, error) {
 	return FieldNumber{name: name, value: value}, nil
 }
 
+func (f FieldNumber) Name() string {
+	return f.name
+}
+
 func (f FieldNumber) Compare(other interface{}) FieldComparison {
 	otherValue, ok := toFloat64(other)
 	if !ok {
@@ -38,7 +42,7 @@ func (f FieldNumber) Compare(other interface{}) FieldComparison {
 	return FieldComparisonEqual
 }
 
-func (f FieldNumber) String() string {
+func (f FieldNumber) Value() string {
 	return strconv.FormatFloat(f.value, 'f', -1, 64)
 }
 

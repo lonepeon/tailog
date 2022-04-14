@@ -20,6 +20,10 @@ func ScanFieldString(name string, content []byte) (FieldString, error) {
 	return FieldString{name: name, value: value}, nil
 }
 
+func (f FieldString) Name() string {
+	return f.name
+}
+
 func (f FieldString) Compare(other interface{}) FieldComparison {
 	otherValue, ok := other.(string)
 	if !ok {
@@ -38,7 +42,7 @@ func (f FieldString) Compare(other interface{}) FieldComparison {
 	return FieldComparisonEqual
 }
 
-func (f FieldString) String() string {
+func (f FieldString) Value() string {
 	return f.value
 }
 

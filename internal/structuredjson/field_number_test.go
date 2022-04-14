@@ -12,14 +12,16 @@ func TestFieldNumberScanSuccessInt(t *testing.T) {
 	field, err := structuredjson.ScanFieldNumber("msg", []byte(`12`))
 
 	testutils.RequireNoError(t, err, "expecting to scan the log")
-	testutils.AssertEqualString(t, "12", field.String(), "invalid field value")
+	testutils.AssertEqualString(t, "12", field.Value(), "invalid field value")
+	testutils.AssertEqualString(t, "msg", field.Name(), "invalid field name")
 }
 
 func TestFieldNumberScanSuccessFloat(t *testing.T) {
 	field, err := structuredjson.ScanFieldNumber("msg", []byte(`12.45`))
 
 	testutils.RequireNoError(t, err, "expecting to scan the log")
-	testutils.AssertEqualString(t, "12.45", field.String(), "invalid field value")
+	testutils.AssertEqualString(t, "12.45", field.Value(), "invalid field value")
+	testutils.AssertEqualString(t, "msg", field.Name(), "invalid field name")
 }
 
 func TestFieldNumberScanError(t *testing.T) {

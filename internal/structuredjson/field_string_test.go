@@ -12,7 +12,8 @@ func TestFieldStringScanSuccess(t *testing.T) {
 	field, err := structuredjson.ScanFieldString("msg", []byte(`"a log message"`))
 
 	testutils.RequireNoError(t, err, "expecting to scan the log")
-	testutils.AssertEqualString(t, "a log message", field.String(), "invalid field value")
+	testutils.AssertEqualString(t, "a log message", field.Value(), "invalid field value")
+	testutils.AssertEqualString(t, "msg", field.Name(), "invalid field name")
 }
 
 func TestFieldStringScanError(t *testing.T) {
