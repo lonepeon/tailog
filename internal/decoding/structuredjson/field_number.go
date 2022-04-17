@@ -6,7 +6,7 @@ import (
 	"math"
 	"strconv"
 
-	"github.com/lonepeon/tailog/internal"
+	"github.com/lonepeon/tailog/internal/decoding"
 )
 
 type FieldNumber struct {
@@ -27,21 +27,21 @@ func (f FieldNumber) Name() string {
 	return f.name
 }
 
-func (f FieldNumber) Compare(other interface{}) internal.FieldComparison {
+func (f FieldNumber) Compare(other interface{}) decoding.FieldComparison {
 	otherValue, ok := toFloat64(other)
 	if !ok {
-		return internal.FieldComparisonGreaterThan
+		return decoding.FieldComparisonGreaterThan
 	}
 
 	if f.value > otherValue {
-		return internal.FieldComparisonGreaterThan
+		return decoding.FieldComparisonGreaterThan
 	}
 
 	if f.value < otherValue {
-		return internal.FieldComparisonLessThan
+		return decoding.FieldComparisonLessThan
 	}
 
-	return internal.FieldComparisonEqual
+	return decoding.FieldComparisonEqual
 }
 
 func (f FieldNumber) Value() string {

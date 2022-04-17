@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/lonepeon/golib/testutils"
-	"github.com/lonepeon/tailog/internal/structuredjson"
+	"github.com/lonepeon/tailog/internal/decoding/structuredjson"
 )
 
 func TestParseEntrySuccess(t *testing.T) {

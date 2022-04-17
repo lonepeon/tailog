@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/lonepeon/golib/testutils"
-	"github.com/lonepeon/tailog/internal/structuredjson"
+	"github.com/lonepeon/tailog/internal/decoding/structuredjson"
 )
 
 func TestDecoderWithSuccessfulEntry(t *testing.T) {

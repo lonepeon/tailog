@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/lonepeon/tailog/internal"
+	"github.com/lonepeon/tailog/internal/decoding"
 )
 
 type Decoder struct {
@@ -17,7 +17,7 @@ func NewDecoder(input io.Reader) *Decoder {
 	return &Decoder{jsonDecoder: json.NewDecoder(input)}
 }
 
-func (d *Decoder) Decode() (internal.Entry, error) {
+func (d *Decoder) Decode() (decoding.Entry, error) {
 	var entry Entry
 
 	if err := d.jsonDecoder.Decode(&entry); err != nil {

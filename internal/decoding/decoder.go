@@ -1,4 +1,4 @@
-package internal
+package decoding
 
 type FieldComparison string
 

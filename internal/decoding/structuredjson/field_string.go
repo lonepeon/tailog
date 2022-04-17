@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/lonepeon/tailog/internal"
+	"github.com/lonepeon/tailog/internal/decoding"
 )
 
 type FieldString struct {
@@ -26,22 +26,22 @@ func (f FieldString) Name() string {
 	return f.name
 }
 
-func (f FieldString) Compare(other interface{}) internal.FieldComparison {
+func (f FieldString) Compare(other interface{}) decoding.FieldComparison {
 	otherValue, ok := other.(string)
 	if !ok {
-		return internal.FieldComparisonGreaterThan
+		return decoding.FieldComparisonGreaterThan
 	}
 
 	rst := strings.Compare(f.value, otherValue)
 	if rst > 0 {
-		return internal.FieldComparisonGreaterThan
+		return decoding.FieldComparisonGreaterThan
 	}
 
 	if rst < 0 {
-		return internal.FieldComparisonLessThan
+		return decoding.FieldComparisonLessThan
 	}
 
-	return internal.FieldComparisonEqual
+	return decoding.FieldComparisonEqual
 }
 
 func (f FieldString) Value() string {

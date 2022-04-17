@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/lonepeon/tailog/internal"
+	"github.com/lonepeon/tailog/internal/decoding"
 )
 
 var (
@@ -13,7 +13,7 @@ var (
 )
 
 type Entry struct {
-	fields []internal.Field
+	fields []decoding.Field
 }
 
 func (e *Entry) UnmarshalJSON(b []byte) error {
@@ -22,7 +22,7 @@ func (e *Entry) UnmarshalJSON(b []byte) error {
 		return fmt.Errorf("can't unmarshal json: %w: %v", ErrCannotParseEntry, err)
 	}
 
-	fields := make([]internal.Field, 0, len(jsonEntries))
+	fields := make([]decoding.Field, 0, len(jsonEntries))
 	for name, rawValue := range jsonEntries {
 		field, err := scanField(name, rawValue)
 		if err != nil {
@@ -41,11 +41,11 @@ func (e Entry) Len() int {
 	return len(e.fields)
 }
 
-func (e Entry) Fields() []internal.Field {
+func (e Entry) Fields() []decoding.Field {
 	return e.fields
 }
 
-func (e Entry) Field(name string) (internal.Field, bool) {
+func (e Entry) Field(name string) (decoding.Field, bool) {
 	for _, f := range e.fields {
 		if f.Name() == name {
 			return f, true
