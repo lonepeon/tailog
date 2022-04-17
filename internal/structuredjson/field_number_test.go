@@ -5,6 +5,7 @@ import (
 
 	"github.com/lonepeon/golib/testutils"
 
+	"github.com/lonepeon/tailog/internal"
 	"github.com/lonepeon/tailog/internal/structuredjson"
 )
 
@@ -37,7 +38,7 @@ func TestFieldNumberEqualSuccess(t *testing.T) {
 
 	type TestCase struct {
 		OtherValue interface{}
-		Expected   structuredjson.FieldComparison
+		Expected   internal.FieldComparison
 	}
 
 	runner := func(name string, tc TestCase) {
@@ -53,31 +54,31 @@ func TestFieldNumberEqualSuccess(t *testing.T) {
 
 	runner("equalInt", TestCase{
 		OtherValue: 12,
-		Expected:   structuredjson.FieldComparisonEqual,
+		Expected:   internal.FieldComparisonEqual,
 	})
 
 	runner("lessThanInt", TestCase{
 		OtherValue: 14,
-		Expected:   structuredjson.FieldComparisonLessThan,
+		Expected:   internal.FieldComparisonLessThan,
 	})
 
 	runner("greaterThanInt", TestCase{
 		OtherValue: 5,
-		Expected:   structuredjson.FieldComparisonGreaterThan,
+		Expected:   internal.FieldComparisonGreaterThan,
 	})
 
 	runner("equalFloat", TestCase{
 		OtherValue: 12.0,
-		Expected:   structuredjson.FieldComparisonEqual,
+		Expected:   internal.FieldComparisonEqual,
 	})
 
 	runner("lessThanFloat", TestCase{
 		OtherValue: 14.5,
-		Expected:   structuredjson.FieldComparisonLessThan,
+		Expected:   internal.FieldComparisonLessThan,
 	})
 
 	runner("greaterThanFloat", TestCase{
 		OtherValue: 5.8,
-		Expected:   structuredjson.FieldComparisonGreaterThan,
+		Expected:   internal.FieldComparisonGreaterThan,
 	})
 }

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+
+	"github.com/lonepeon/tailog/internal"
 )
 
 type FieldNumber struct {
@@ -25,21 +27,21 @@ func (f FieldNumber) Name() string {
 	return f.name
 }
 
-func (f FieldNumber) Compare(other interface{}) FieldComparison {
+func (f FieldNumber) Compare(other interface{}) internal.FieldComparison {
 	otherValue, ok := toFloat64(other)
 	if !ok {
-		return FieldComparisonGreaterThan
+		return internal.FieldComparisonGreaterThan
 	}
 
 	if f.value > otherValue {
-		return FieldComparisonGreaterThan
+		return internal.FieldComparisonGreaterThan
 	}
 
 	if f.value < otherValue {
-		return FieldComparisonLessThan
+		return internal.FieldComparisonLessThan
 	}
 
-	return FieldComparisonEqual
+	return internal.FieldComparisonEqual
 }
 
 func (f FieldNumber) Value() string {

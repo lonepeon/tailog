@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
+	"github.com/lonepeon/tailog/internal"
 )
 
 var (
@@ -11,37 +13,39 @@ var (
 )
 
 type Entry struct {
-	fields []Field
+	fields []internal.Field
 }
 
-func ParseEntry(b []byte) (Entry, error) {
+func (e *Entry) UnmarshalJSON(b []byte) error {
 	jsonEntries := make(map[string]json.RawMessage)
 	if err := json.Unmarshal(b, &jsonEntries); err != nil {
-		return Entry{}, fmt.Errorf("can't unmarshal json: %w: %v", ErrCannotParseEntry, err)
+		return fmt.Errorf("can't unmarshal json: %w: %v", ErrCannotParseEntry, err)
 	}
 
-	fields := make([]Field, 0, len(jsonEntries))
+	fields := make([]internal.Field, 0, len(jsonEntries))
 	for name, rawValue := range jsonEntries {
 		field, err := scanField(name, rawValue)
 		if err != nil {
-			return Entry{}, err
+			return err
 		}
 
 		fields = append(fields, field)
 	}
 
-	return Entry{fields: fields}, nil
+	e.fields = fields
+
+	return nil
 }
 
 func (e Entry) Len() int {
 	return len(e.fields)
 }
 
-func (e Entry) Fields() []Field {
+func (e Entry) Fields() []internal.Field {
 	return e.fields
 }
 
-func (e Entry) Field(name string) (Field, bool) {
+func (e Entry) Field(name string) (internal.Field, bool) {
 	for _, f := range e.fields {
 		if f.Name() == name {
 			return f, true

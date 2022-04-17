@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+
+	"github.com/lonepeon/tailog/internal"
 )
 
 type FieldString struct {
@@ -24,22 +26,22 @@ func (f FieldString) Name() string {
 	return f.name
 }
 
-func (f FieldString) Compare(other interface{}) FieldComparison {
+func (f FieldString) Compare(other interface{}) internal.FieldComparison {
 	otherValue, ok := other.(string)
 	if !ok {
-		return FieldComparisonGreaterThan
+		return internal.FieldComparisonGreaterThan
 	}
 
 	rst := strings.Compare(f.value, otherValue)
 	if rst > 0 {
-		return FieldComparisonGreaterThan
+		return internal.FieldComparisonGreaterThan
 	}
 
 	if rst < 0 {
-		return FieldComparisonLessThan
+		return internal.FieldComparisonLessThan
 	}
 
-	return FieldComparisonEqual
+	return internal.FieldComparisonEqual
 }
 
 func (f FieldString) Value() string {

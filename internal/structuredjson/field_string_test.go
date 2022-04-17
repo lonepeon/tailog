@@ -5,6 +5,7 @@ import (
 
 	"github.com/lonepeon/golib/testutils"
 
+	"github.com/lonepeon/tailog/internal"
 	"github.com/lonepeon/tailog/internal/structuredjson"
 )
 
@@ -29,7 +30,7 @@ func TestFieldStringCompareString(t *testing.T) {
 
 	type TestCase struct {
 		OtherValue string
-		Expected   structuredjson.FieldComparison
+		Expected   internal.FieldComparison
 	}
 
 	runner := func(name string, tc TestCase) {
@@ -45,16 +46,16 @@ func TestFieldStringCompareString(t *testing.T) {
 
 	runner("equal", TestCase{
 		OtherValue: "something",
-		Expected:   structuredjson.FieldComparisonEqual,
+		Expected:   internal.FieldComparisonEqual,
 	})
 
 	runner("lessThan", TestCase{
 		OtherValue: "xxxxx",
-		Expected:   structuredjson.FieldComparisonLessThan,
+		Expected:   internal.FieldComparisonLessThan,
 	})
 
 	runner("greaterThan", TestCase{
 		OtherValue: "aaaaa",
-		Expected:   structuredjson.FieldComparisonGreaterThan,
+		Expected:   internal.FieldComparisonGreaterThan,
 	})
 }

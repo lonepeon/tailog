@@ -8,7 +8,8 @@ import (
 )
 
 func TestParseEntrySuccess(t *testing.T) {
-	entry, err := structuredjson.ParseEntry([]byte(`{
+	var entry structuredjson.Entry
+	err := entry.UnmarshalJSON([]byte(`{
 		"ts": 1649965739,
 		"level": "INFO",
 		"httpStatus": 201,
@@ -42,13 +43,15 @@ func TestParseEntrySuccess(t *testing.T) {
 }
 
 func TestParseEntryMalformedJSON(t *testing.T) {
-	_, err := structuredjson.ParseEntry([]byte(`{ "this is not a JSON" }`))
+	var entry structuredjson.Entry
+	err := entry.UnmarshalJSON([]byte(`{ "this is not a JSON" }`))
 	testutils.RequireHasError(t, err, "expecting a parsing error")
 	testutils.AssertContainsString(t, "unmarshal json", err.Error(), "expecting a parsing error")
 }
 
 func TestParseEntryUnsupportedValue(t *testing.T) {
-	_, err := structuredjson.ParseEntry([]byte(`{ "array": [1,2,3] }`))
+	var entry structuredjson.Entry
+	err := entry.UnmarshalJSON([]byte(`{ "array": [1,2,3] }`))
 	testutils.RequireHasError(t, err, "expecting a parsing error")
 	testutils.AssertContainsString(t, "parse field", err.Error(), "expecting a parsing error")
 	testutils.AssertContainsString(t, "array", err.Error(), "expecting a parsing error")
