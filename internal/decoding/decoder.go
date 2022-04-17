@@ -23,3 +23,10 @@ type Entry interface {
 	Fields() []Field
 	Field(string) (Field, bool)
 }
+
+type Decoder interface {
+	// Decode returns an entry if it can't parse one. It can return any errors,
+	// they will considered as opaque errors and not handled except for io.EOF
+	// to alert the stream is closed
+	Decode() (Entry, error)
+}
