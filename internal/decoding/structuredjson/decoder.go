@@ -17,6 +17,10 @@ func NewDecoder(input io.Reader) *Decoder {
 	return &Decoder{jsonDecoder: json.NewDecoder(input)}
 }
 
+func (d *Decoder) More() bool {
+	return d.jsonDecoder.More()
+}
+
 func (d *Decoder) Decode() (decoding.Entry, error) {
 	var entry Entry
 

@@ -29,4 +29,7 @@ type Decoder interface {
 	// they will considered as opaque errors and not handled except for io.EOF
 	// to alert the stream is closed
 	Decode() (Entry, error)
+
+	// More returns a boolean indicating wether there are more entries to read
+	More() bool
 }

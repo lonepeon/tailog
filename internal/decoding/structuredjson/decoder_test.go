@@ -1,6 +1,8 @@
 package structuredjson_test
 
 import (
+	"bytes"
+	"fmt"
 	"io"
 	"strings"
 	"testing"
@@ -71,4 +73,34 @@ func TestDecoderWithInvalidContent(t *testing.T) {
 	testutils.RequireHasError(t, err, "expect decoding error")
 	testutils.AssertErrorContains(t, "decode structured", err, "unexpected error")
 	testutils.AssertErrorContains(t, "invalid character", err, "unexpected error")
+}
+
+func TestDecoderMore(t *testing.T) {
+	decoder := structuredjson.NewDecoder(strings.NewReader(`
+		{ "id": 1, "message": "message 1" }
+		{ "id": 2, "message": "message 2" }
+	`))
+
+	testutils.AssertEqualBool(t, true, decoder.More(), "expecting data to come")
+
+	_, err := decoder.Decode()
+	testutils.RequireNoError(t, err, "didn't expect decoding error")
+
+	testutils.AssertEqualBool(t, true, decoder.More(), "expecting more data to come")
+
+	_, err = decoder.Decode()
+	testutils.RequireNoError(t, err, "didn't expect decoding error")
+
+	testutils.AssertEqualBool(t, false, decoder.More(), "didn't expect more data to come")
+}
+
+func TestDecoderMoreWithPause(t *testing.T) {
+	builder := bytes.NewBufferString("")
+	decoder := structuredjson.NewDecoder(builder)
+
+	testutils.AssertEqualBool(t, false, decoder.More(), "didn't expect data to come")
+
+	fmt.Fprintln(builder, `{ "id": 1, "message": "message 1" }`)
+
+	testutils.AssertEqualBool(t, true, decoder.More(), "expecting data to come")
 }
