@@ -16,6 +16,14 @@ func NewCircularBuffer(size int) *CircularBuffer {
 	}
 }
 
+func (b *CircularBuffer) At(index int) (Entry, bool) {
+	if index >= b.len || index < 0 {
+		return nil, false
+	}
+
+	return b.entries[(b.startIndex+index)%b.len], true
+}
+
 func (b *CircularBuffer) Len() int {
 	return b.len
 }

@@ -57,6 +57,52 @@ func TestCircularBufferLenFilled(t *testing.T) {
 	testutils.AssertEqualInt(t, 3, buf.Len(), "invalid buffer size")
 }
 
+func TestCircularBufferAtNotNegative(t *testing.T) {
+	buf := decoding.NewCircularBuffer(3)
+	buf.Push(decodingtest.NewEntry(map[string]string{"label1": "value 1"}))
+	buf.Push(decodingtest.NewEntry(map[string]string{"label2": "value 2"}))
+
+	entry, found := buf.At(-1)
+	testutils.AssertEqualBool(t, false, found, "unexpected entry at index %s", entry)
+}
+
+func TestCircularBufferAtTooBig(t *testing.T) {
+	buf := decoding.NewCircularBuffer(3)
+	buf.Push(decodingtest.NewEntry(map[string]string{"label1": "value 1"}))
+	buf.Push(decodingtest.NewEntry(map[string]string{"label2": "value 2"}))
+
+	entry, found := buf.At(2)
+	testutils.AssertEqualBool(t, false, found, "unexpected entry at index %s", entry)
+}
+
+func TestCircularBufferAtValidNotFilled(t *testing.T) {
+	buf := decoding.NewCircularBuffer(3)
+	buf.Push(decodingtest.NewEntry(map[string]string{"label1": "value 1"}))
+	buf.Push(decodingtest.NewEntry(map[string]string{"label2": "value 2"}))
+
+	entry, found := buf.At(1)
+	testutils.RequireEqualBool(t, true, found, "expecting entry to be found")
+
+	field, found := entry.Field("label2")
+	testutils.RequireEqualBool(t, true, found, "expecting field to be found")
+	testutils.AssertEqualString(t, "value 2", field.Value(), "unexpected field value")
+}
+
+func TestCircularBufferAtValidFilled(t *testing.T) {
+	buf := decoding.NewCircularBuffer(3)
+	buf.Push(decodingtest.NewEntry(map[string]string{"label1": "value 1"}))
+	buf.Push(decodingtest.NewEntry(map[string]string{"label2": "value 2"}))
+	buf.Push(decodingtest.NewEntry(map[string]string{"label3": "value 3"}))
+	buf.Push(decodingtest.NewEntry(map[string]string{"label4": "value 4"}))
+
+	entry, found := buf.At(2)
+	testutils.RequireEqualBool(t, true, found, "expecting entry to be found")
+
+	field, found := entry.Field("label4")
+	testutils.RequireEqualBool(t, true, found, "expecting field to be found")
+	testutils.AssertEqualString(t, "value 4", field.Value(), "unexpected field value")
+}
+
 func TestCircularBufferEntriesNoData(t *testing.T) {
 	buf := decoding.NewCircularBuffer(3)
 	entries := buf.Entries()
