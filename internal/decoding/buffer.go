@@ -30,12 +30,16 @@ func (b *CircularBuffer) Entries() []Entry {
 	return entries
 }
 
-func (b *CircularBuffer) Push(e Entry) {
+// Push adds a new entry to the buffer. It returns a boolean indicating if
+// a valud had to be evicted
+func (b *CircularBuffer) Push(e Entry) bool {
+	var hasEvictedValue bool
 	b.entries[b.nextIndex] = e
 
 	length := b.len + 1
 	bufferCapacity := cap(b.entries)
 	if length > bufferCapacity {
+		hasEvictedValue = true
 		length = bufferCapacity
 	}
 	b.len = length
@@ -44,4 +48,6 @@ func (b *CircularBuffer) Push(e Entry) {
 	if b.len == bufferCapacity {
 		b.startIndex = b.nextIndex
 	}
+
+	return hasEvictedValue
 }

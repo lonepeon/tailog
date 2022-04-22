@@ -97,3 +97,22 @@ func TestCircularBufferEntriesFilled(t *testing.T) {
 	_, ok = entries[2].Field("label4")
 	testutils.AssertEqualBool(t, true, ok, "expecting to find label4 field")
 }
+
+func TestCircularBufferPush(t *testing.T) {
+	buf := decoding.NewCircularBuffer(3)
+
+	evicted := buf.Push(decodingtest.NewEntry(map[string]string{"label1": "value 1"}))
+	testutils.AssertEqualBool(t, false, evicted, "didn't expect value to be evicted")
+
+	evicted = buf.Push(decodingtest.NewEntry(map[string]string{"label2": "value 2"}))
+	testutils.AssertEqualBool(t, false, evicted, "didn't expect value to be evicted")
+
+	evicted = buf.Push(decodingtest.NewEntry(map[string]string{"label3": "value 3"}))
+	testutils.AssertEqualBool(t, false, evicted, "didn't expect value to be evicted")
+
+	evicted = buf.Push(decodingtest.NewEntry(map[string]string{"label4": "value 4"}))
+	testutils.AssertEqualBool(t, true, evicted, "didn't expect value to be evicted")
+
+	evicted = buf.Push(decodingtest.NewEntry(map[string]string{"label4": "value 5"}))
+	testutils.AssertEqualBool(t, true, evicted, "didn't expect value to be evicted")
+}
