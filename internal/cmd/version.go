@@ -9,9 +9,9 @@ var (
 	buildDate = "unknown"
 )
 
-func Version() string {
+func Version(appName string) string {
 	return fmt.Sprintf(
-		"tailog(branch=%s commit=%s state=%s date=%s)",
-		gitBranch, gitCommit, gitState, buildDate,
+		"%s(branch=%s commit=%s state=%s date=%s)",
+		appName, gitBranch, gitCommit, gitState, buildDate,
 	)
 }
