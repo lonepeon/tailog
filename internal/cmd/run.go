@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -8,8 +9,10 @@ import (
 )
 
 type Flags struct {
-	History        int
-	DisplayVersion bool
+	History           int
+	Fieldnames        string
+	ErrorMappingField string
+	DisplayVersion    bool
 }
 
 func Run(args []string, stdin io.Reader, stdout io.Writer) error {
@@ -27,6 +30,8 @@ func Run(args []string, stdin io.Reader, stdout io.Writer) error {
 	}
 	fset.BoolVar(&cfg.DisplayVersion, "v", false, "display CLI version")
 	fset.IntVar(&cfg.History, "history", 100, "numbers of line of logs to keep")
+	fset.StringVar(&cfg.Fieldnames, "fields", "http.method,http.target,http.status_code,msg", "fields to display from the log stream")
+	fset.StringVar(&cfg.ErrorMappingField, "errorfield", "msg", "field to use to display errors coming from parsing the log stream")
 
 	if err := fset.Parse(args); err != nil {
 		return err
@@ -37,12 +42,12 @@ func Run(args []string, stdin io.Reader, stdout io.Writer) error {
 		return nil
 	}
 
-	return StartTUI(
-		fset.Name(),
-		stdin,
-		cfg.History,
-		[]string{"http.method", "http.target", "http.status_code", "msg"},
-	)
+	fieldNames := strings.Split(cfg.Fieldnames, ",")
+	if len(fieldNames) == 0 {
+		return errors.New("fields list must contain at least one field")
+	}
+
+	return StartTUI(fset.Name(), stdin, cfg.History, cfg.ErrorMappingField, fieldNames)
 }
 
 var helmMessage = `usage: %[1]s [flags]

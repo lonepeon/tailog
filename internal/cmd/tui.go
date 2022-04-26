@@ -9,14 +9,14 @@ import (
 	"github.com/rivo/tview"
 )
 
-func StartTUI(appName string, stdin io.Reader, buffer int, fieldNames []string) error {
+func StartTUI(appName string, stdin io.Reader, buffer int, errorMappingField string, fieldNames []string) error {
 	layout := tui.NewLayout(buffer, fieldNames)
 	app := tview.NewApplication().SetRoot(layout, true).EnableMouse(true)
 
 	watcher := decoding.NewWatcher(structuredjson.NewDecoder(stdin))
 	watcher.Notify(func(entry decoding.Entry, err error) {
 		if err != nil {
-			entry = decoding.NewEntryError("msg", err)
+			entry = decoding.NewEntryError(errorMappingField, err)
 		}
 
 		app.QueueUpdateDraw(func() { layout.AddLogEntry(entry) })
