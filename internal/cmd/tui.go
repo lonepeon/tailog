@@ -16,7 +16,7 @@ func StartTUI(appName string, stdin io.Reader, buffer int, fieldNames []string) 
 	watcher := decoding.NewWatcher(structuredjson.NewDecoder(stdin))
 	watcher.Notify(func(entry decoding.Entry, err error) {
 		if err != nil {
-			panic(err.Error())
+			entry = decoding.NewEntryError("msg", err)
 		}
 
 		app.QueueUpdateDraw(func() { layout.AddLogEntry(entry) })
