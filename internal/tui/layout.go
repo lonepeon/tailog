@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"github.com/gdamore/tcell/v2"
 	"github.com/lonepeon/tailog/internal/decoding"
 	"github.com/rivo/tview"
 )
@@ -21,6 +22,8 @@ func NewLayout(buffer int, fieldNames []string) *Layout {
 		SetBorders(true).
 		AddItem(filterbox, 0, 0, 1, 3, 0, 0, true).
 		AddItem(table, 1, 0, 1, 3, 0, 0, false)
+
+	grid.SetBackgroundColor(tcell.ColorDefault)
 
 	return &Layout{Grid: grid, filterbox: filterbox, table: table}
 }

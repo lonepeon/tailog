@@ -1,9 +1,16 @@
 package tui
 
-import "github.com/rivo/tview"
+import (
+	"github.com/gdamore/tcell/v2"
+	"github.com/rivo/tview"
+)
 
 func NewFilterbox() *tview.InputField {
-	return tview.NewInputField().
+	field := tview.NewInputField().
 		SetLabel("Filters ").
 		SetFieldWidth(0)
+	field.SetLabelColor(tcell.ColorDefault)
+	field.SetBackgroundColor(tcell.ColorDefault)
+
+	return field
 }

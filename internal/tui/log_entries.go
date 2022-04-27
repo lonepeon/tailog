@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"github.com/gdamore/tcell/v2"
 	"github.com/lonepeon/tailog/internal/decoding"
 	"github.com/rivo/tview"
 )
@@ -26,21 +27,21 @@ func (l *LogEntries) GetCell(row, column int) *tview.TableCell {
 	fieldName := l.fieldNames[column]
 
 	if row == 0 {
-		return tview.NewTableCell(fieldName)
+		return l.buildCell(fieldName)
 	}
 
 	maxIndex := l.buffer.Len() - 1
 	entry, ok := l.buffer.At(maxIndex - (row - 1))
 	if !ok {
-		return tview.NewTableCell("")
+		return l.buildCell("")
 	}
 
 	field, ok := entry.Field(fieldName)
 	if !ok {
-		return tview.NewTableCell("")
+		return l.buildCell("")
 	}
 
-	return tview.NewTableCell(field.Value())
+	return l.buildCell(field.Value())
 }
 
 func (l *LogEntries) GetRowCount() int {
@@ -53,4 +54,10 @@ func (l *LogEntries) GetColumnCount() int {
 
 func (l *LogEntries) AddLogEntry(entry decoding.Entry) {
 	l.buffer.Push(entry)
+}
+
+func (l *LogEntries) buildCell(value string) *tview.TableCell {
+	cell := tview.NewTableCell(value)
+	cell.SetTextColor(tcell.ColorDefault)
+	return cell
 }

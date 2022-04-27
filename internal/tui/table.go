@@ -17,6 +17,8 @@ func NewTable(buffer int, fieldNames []string) *Table {
 		SetBorders(true).
 		SetFixed(1, len(fieldNames)).
 		SetContent(tviewContent)
+	tviewTable.SetBackgroundColor(tcell.ColorDefault)
+	tviewTable.SetBordersColor(tcell.ColorDefault)
 
 	table := Table{Table: tviewTable, content: tviewContent}
 	table.setupInputCapture()
