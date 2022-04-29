@@ -38,12 +38,12 @@ test: test-unit test-format test-lint test-security
 
 .PHONY: test-unit
 test-unit:
-	@echo "+$@"
+	@echo "+ $@"
 	@go test ./...
 
 .PHONY: test-format
 test-format:
-	@echo $@
+	@echo "+ $@"
 	@data=$$(gofmt -l main.go internal);\
 		 if [ -n "$${data}" ]; then \
 			>&2 echo "format is broken:"; \
@@ -53,12 +53,12 @@ test-format:
 
 .PHONY: test-generate
 test-generate:
-	@echo $@
+	@echo "+ $@"
 	@./scripts/assert-generated-files-updated.sh
 
 .PHONY: test-lint
 test-lint:
-	@echo $@
+	@echo "+ $@"
 	@$(GO_BIN) run ./vendor/github.com/golangci/golangci-lint/cmd/golangci-lint run
 
 .PHONY: test-security

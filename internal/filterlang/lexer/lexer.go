@@ -6,33 +6,53 @@ import (
 )
 
 var (
-	EOF                     = errors.New("end of stream")
-	ErrUnexpectedIdentifier = errors.New("expecting identifier [:alpha:][alphanum]*")
+	ErrEOF                              = errors.New("end of stream")
+	ErrUnexpectedSimpleIdentifier       = errors.New("expecting identifier [:alpha:][alphanum]*")
+	ErrUnexpectedDoubleQuotesIdentifier = errors.New(`expecting identifier "[^"]+"`)
 )
+
+func DoubleQuotesIdentifier(content string) (string, string, error) {
+	if content == "" {
+		return "", "", ErrEOF
+	}
+
+	if !startWith(content, func(c rune) bool { return c == '"' }) {
+		return "", "", ErrUnexpectedDoubleQuotesIdentifier
+	}
+
+	identifier, remaining, found := readWhile(content[1:], func(c rune) bool {
+		return c != '"'
+	})
+
+	if !found {
+		return "", "", ErrUnexpectedDoubleQuotesIdentifier
+	}
+
+	if !startWith(remaining, func(c rune) bool { return c == '"' }) {
+		return "", "", ErrUnexpectedDoubleQuotesIdentifier
+	}
+
+	return identifier, remaining[1:], nil
+}
 
 func SimpleIdentifier(content string) (string, string, error) {
 	if content == "" {
-		return "", "", EOF
+		return "", "", ErrEOF
 	}
 
-	if !isAlpha([]rune(content)[0]) {
-		return "", "", ErrUnexpectedIdentifier
+	if !startWith(content, isAlpha) {
+		return "", "", ErrUnexpectedSimpleIdentifier
 	}
 
-	var position int
-	for i, c := range content {
-		if !isAlphaNum(c) && c != '_' {
-			break
-		}
+	identifier, remaining, found := readWhile(content, func(c rune) bool {
+		return isAlphaNum(c) || c == '_'
+	})
 
-		position = i + 1
+	if !found {
+		return "", "", ErrUnexpectedSimpleIdentifier
 	}
 
-	if position == 0 {
-		return "", "", ErrUnexpectedIdentifier
-	}
-
-	return content[:position], content[position:], nil
+	return identifier, remaining, nil
 }
 
 func isAlphaNum(c rune) bool {
@@ -45,4 +65,30 @@ func isAlpha(c rune) bool {
 
 func isNum(c rune) bool {
 	return unicode.IsDigit(c)
+}
+
+func startWith(s string, fn func(c rune) bool) bool {
+	runes := []rune(s)
+	if len(runes) == 0 {
+		return false
+	}
+
+	return fn(runes[0])
+}
+
+func readWhile(s string, fn func(c rune) bool) (string, string, bool) {
+	var position int
+	for i, c := range s {
+		if !fn(c) {
+			break
+		}
+
+		position = i + 1
+	}
+
+	if position == 0 {
+		return "", "", false
+	}
+
+	return s[:position], s[position:], true
 }
