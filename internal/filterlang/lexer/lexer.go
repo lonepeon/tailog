@@ -11,6 +11,18 @@ var (
 	ErrUnexpectedDoubleQuotesIdentifier = errors.New(`expecting identifier "[^"]+"`)
 )
 
+func EatSpaces(content string) (string, error) {
+	for i, c := range content {
+		if unicode.IsSpace(c) {
+			continue
+		}
+
+		return content[i:], nil
+	}
+
+	return "", ErrEOF
+}
+
 func DoubleQuotesIdentifier(content string) (string, string, error) {
 	if content == "" {
 		return "", "", ErrEOF

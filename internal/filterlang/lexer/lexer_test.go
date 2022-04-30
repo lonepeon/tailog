@@ -7,6 +7,36 @@ import (
 	"github.com/lonepeon/tailog/internal/filterlang/lexer"
 )
 
+func TestLexIdentifierEatSpaces(t *testing.T) {
+	type TestCase struct {
+		Input     string
+		Remaining string
+	}
+
+	runner := func(name string, tc TestCase) {
+		t.Run(name, func(t *testing.T) {
+			remaining, err := lexer.EatSpaces(tc.Input)
+			testutils.RequireNoError(t, err, "can't eat spaces %s", tc.Input)
+			testutils.AssertEqualString(t, tc.Remaining, remaining, "unexpected remaining input")
+		})
+	}
+
+	runner("oneSpace", TestCase{
+		Input:     " a text  ",
+		Remaining: "a text  ",
+	})
+
+	runner("severalSpaces", TestCase{
+		Input:     "      \t \n a text  ",
+		Remaining: "a text  ",
+	})
+
+	runner("noSpaces", TestCase{
+		Input:     "a text  ",
+		Remaining: "a text  ",
+	})
+}
+
 func TestLexIdentifierNoQuotesSuccess(t *testing.T) {
 	type TestCase struct {
 		Input      string
