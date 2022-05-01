@@ -18,7 +18,20 @@ func isNum(c rune) bool {
 	return unicode.IsDigit(c)
 }
 
-func startWith(runes []rune, fn func(c rune) bool) bool {
+func startWith(runes []rune, expected []rune) bool {
+	if len(runes) < len(expected) {
+		return false
+	}
+
+	for i := range expected {
+		if runes[i] != expected[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func startWithFn(runes []rune, fn func(c rune) bool) bool {
 	if len(runes) == 0 {
 		return false
 	}

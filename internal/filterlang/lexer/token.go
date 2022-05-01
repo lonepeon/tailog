@@ -12,6 +12,7 @@ var (
 	TokenTypeIllegal    = TokenType{name: "Illegal"}
 	TokenTypeEOF        = TokenType{name: "EOF"}
 	TokenTypeIdentifier = TokenType{name: "Identifier"}
+	TokenTypeEqual      = TokenType{name: "Equal"}
 )
 
 type Token struct {
@@ -29,4 +30,8 @@ func newTokenIllegal(reason string) Token {
 
 func newTokenIdentifier(name string) Token {
 	return Token{Type: TokenTypeIdentifier, Value: name}
+}
+
+func newTokenEqual() Token {
+	return Token{Type: TokenTypeEqual, Value: ""}
 }

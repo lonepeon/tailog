@@ -3,7 +3,7 @@ package lexer
 type DoubleQuotesIdentifier struct{}
 
 func (i DoubleQuotesIdentifier) Matches(content []rune) bool {
-	return startWith(content, isRune('"'))
+	return startWithFn(content, isRune('"'))
 }
 
 func (i DoubleQuotesIdentifier) Read(content []rune) (Token, []rune) {
@@ -11,7 +11,7 @@ func (i DoubleQuotesIdentifier) Read(content []rune) (Token, []rune) {
 		return newTokenEOF(), content
 	}
 
-	if !startWith(content, func(c rune) bool { return c == '"' }) {
+	if !startWithFn(content, func(c rune) bool { return c == '"' }) {
 		return newTokenIllegal("expecting identifier's opening double quote character"), content
 	}
 
@@ -21,7 +21,7 @@ func (i DoubleQuotesIdentifier) Read(content []rune) (Token, []rune) {
 		return newTokenIllegal("didn't detect any identifier"), content
 	}
 
-	if !startWith(remaining, func(c rune) bool { return c == '"' }) {
+	if !startWithFn(remaining, func(c rune) bool { return c == '"' }) {
 		return newTokenIllegal("expecting identifier's closing double quote character"), content
 	}
 
@@ -31,7 +31,7 @@ func (i DoubleQuotesIdentifier) Read(content []rune) (Token, []rune) {
 type NoQuotesIdentifier struct{}
 
 func (i NoQuotesIdentifier) Matches(content []rune) bool {
-	return startWith(content, isAlpha)
+	return startWithFn(content, isAlpha)
 }
 
 func (i NoQuotesIdentifier) Read(content []rune) (Token, []rune) {
@@ -39,7 +39,7 @@ func (i NoQuotesIdentifier) Read(content []rune) (Token, []rune) {
 		return newTokenEOF(), content
 	}
 
-	if !startWith(content, isAlpha) {
+	if !startWithFn(content, isAlpha) {
 		return newTokenIllegal("expecting identifier to start with an alphabetic character"), content
 	}
 

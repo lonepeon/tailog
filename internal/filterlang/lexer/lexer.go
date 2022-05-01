@@ -14,6 +14,7 @@ func NewLexer(content string) *Lexer {
 	return &Lexer{
 		content: []rune(content),
 		registry: []TokenReader{
+			EqualSpecialCharacter,
 			DoubleQuotesIdentifier{},
 			NoQuotesIdentifier{},
 		},
