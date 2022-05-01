@@ -21,22 +21,22 @@ func TestEatSpaces(t *testing.T) {
 	}
 
 	runner("withSomeSpaces", TestCase{
-		Input:     []rune("  some input"),
-		Remaining: []rune("some input"),
+		Input:     []rune("  some input "),
+		Remaining: []rune("some input "),
 	})
 
 	runner("withSomeTabs", TestCase{
-		Input:     []rune("\t  some input"),
-		Remaining: []rune("some input"),
+		Input:     []rune("\t  some input   "),
+		Remaining: []rune("some input   "),
 	})
 
 	runner("withSomeNewlines", TestCase{
-		Input:     []rune("\n\t  some input"),
-		Remaining: []rune("some input"),
+		Input:     []rune("\n\t  some input   "),
+		Remaining: []rune("some input   "),
 	})
 
 	runner("withNoSpace", TestCase{
-		Input:     []rune("some input"),
-		Remaining: []rune("some input"),
+		Input:     []rune("some input   "),
+		Remaining: []rune("some input   "),
 	})
 }

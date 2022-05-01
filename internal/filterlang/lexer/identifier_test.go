@@ -7,37 +7,48 @@ import (
 	"github.com/lonepeon/tailog/internal/filterlang/lexer"
 )
 
-func TestLexIdentifierEatSpaces(t *testing.T) {
+// nolint:funlen
+func TestLexIdentifierNoQuotesMatches(t *testing.T) {
 	type TestCase struct {
-		Input     []rune
-		Remaining []rune
+		Input   []rune
+		Matches bool
 	}
 
 	runner := func(name string, tc TestCase) {
 		t.Run(name, func(t *testing.T) {
-			remaining := lexer.EatSpaces(tc.Input)
-			testutils.AssertEqualString(t, string(tc.Remaining), string(remaining), "unexpected remaining input")
+			match := lexer.NoQuotesIdentifier{}.Matches(tc.Input)
+			testutils.AssertEqualBool(t, tc.Matches, match, "unexpected content match")
 		})
 	}
 
-	runner("oneSpace", TestCase{
-		Input:     []rune(" a text  "),
-		Remaining: []rune("a text  "),
+	runner("startWithAlphaCharacter", TestCase{
+		Input:   []rune(`name`),
+		Matches: true,
 	})
 
-	runner("severalSpaces", TestCase{
-		Input:     []rune("      \t \n a text  "),
-		Remaining: []rune("a text  "),
+	runner("startWithUnderscore", TestCase{
+		Input:   []rune(`_name`),
+		Matches: false,
 	})
 
-	runner("noSpaces", TestCase{
-		Input:     []rune("a text  "),
-		Remaining: []rune("a text  "),
+	runner("startWithNumericCharacter", TestCase{
+		Input:   []rune(`42name`),
+		Matches: false,
+	})
+
+	runner("startWithDash", TestCase{
+		Input:   []rune(`-name`),
+		Matches: false,
+	})
+
+	runner("startWithSpace", TestCase{
+		Input:   []rune(` name`),
+		Matches: false,
 	})
 }
 
 // nolint:funlen
-func TestLexIdentifierNoQuotes(t *testing.T) {
+func TestLexIdentifierNoQuotesRead(t *testing.T) {
 	type TestCase struct {
 		Input      []rune
 		TokenType  lexer.TokenType
@@ -47,7 +58,7 @@ func TestLexIdentifierNoQuotes(t *testing.T) {
 
 	runner := func(name string, tc TestCase) {
 		t.Run(name, func(t *testing.T) {
-			token, remaining := lexer.SimpleIdentifier(tc.Input)
+			token, remaining := lexer.NoQuotesIdentifier{}.Read(tc.Input)
 			testutils.AssertEqualString(t, tc.TokenType.String(), token.Type.String(), "unexpected token type")
 			testutils.AssertEqualString(t, tc.TokenValue, token.Value, "unexpected token value")
 			testutils.AssertEqualString(t, string(tc.Remaining), string(remaining), "unexpected remaining input")
@@ -133,7 +144,52 @@ func TestLexIdentifierNoQuotes(t *testing.T) {
 }
 
 // nolint:funlen
-func TestLexIdentifierDoubleQuotes(t *testing.T) {
+func TestLexIdentifierDoubleQuotesMatches(t *testing.T) {
+	type TestCase struct {
+		Input   []rune
+		Matches bool
+	}
+
+	runner := func(name string, tc TestCase) {
+		t.Run(name, func(t *testing.T) {
+			match := lexer.DoubleQuotesIdentifier{}.Matches(tc.Input)
+			testutils.AssertEqualBool(t, tc.Matches, match, "unexpected content match")
+		})
+	}
+
+	runner("startWithDoubleQuote", TestCase{
+		Input:   []rune(`"name"`),
+		Matches: true,
+	})
+
+	runner("startWithAlphaCharacter", TestCase{
+		Input:   []rune(`name`),
+		Matches: false,
+	})
+
+	runner("startWithUnderscore", TestCase{
+		Input:   []rune(`_name`),
+		Matches: false,
+	})
+
+	runner("startWithNumericCharacter", TestCase{
+		Input:   []rune(`42name`),
+		Matches: false,
+	})
+
+	runner("startWithDash", TestCase{
+		Input:   []rune(`-name`),
+		Matches: false,
+	})
+
+	runner("startWithSpace", TestCase{
+		Input:   []rune(` name`),
+		Matches: false,
+	})
+}
+
+// nolint:funlen
+func TestLexIdentifierDoubleQuotesRead(t *testing.T) {
 	type TestCase struct {
 		Input      []rune
 		TokenType  lexer.TokenType
@@ -143,7 +199,7 @@ func TestLexIdentifierDoubleQuotes(t *testing.T) {
 
 	runner := func(name string, tc TestCase) {
 		t.Run(name, func(t *testing.T) {
-			token, remaining := lexer.DoubleQuotesIdentifier(tc.Input)
+			token, remaining := lexer.DoubleQuotesIdentifier{}.Read(tc.Input)
 			testutils.AssertEqualString(t, tc.TokenType.String(), token.Type.String(), "unexpected token type")
 			testutils.AssertEqualString(t, tc.TokenValue, token.Value, "unexpected token value")
 			testutils.AssertEqualString(t, string(tc.Remaining), string(remaining), "unexpected remaining input")

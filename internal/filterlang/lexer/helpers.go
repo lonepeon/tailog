@@ -6,6 +6,10 @@ func isAlphaNum(c rune) bool {
 	return isAlpha(c) || isNum(c)
 }
 
+func isRune(expected rune) func(rune) bool {
+	return func(c rune) bool { return c == expected }
+}
+
 func isAlpha(c rune) bool {
 	return unicode.IsLetter(c)
 }

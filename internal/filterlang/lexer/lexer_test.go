@@ -1,0 +1,38 @@
+package lexer_test
+
+import (
+	"testing"
+
+	"github.com/lonepeon/golib/testutils"
+	"github.com/lonepeon/tailog/internal/filterlang/lexer"
+)
+
+func TestLex(t *testing.T) {
+	lex := lexer.NewLexer(`
+	name and "another identifier"
+	several line
+	`)
+
+	token := lex.NextToken()
+	testutils.AssertEqualString(t, lexer.TokenTypeIdentifier.String(), token.Type.String(), "unexpected token type")
+	testutils.AssertEqualString(t, "name", token.Value, "unexpected token value")
+
+	token = lex.NextToken()
+	testutils.AssertEqualString(t, lexer.TokenTypeIdentifier.String(), token.Type.String(), "unexpected token type")
+	testutils.AssertEqualString(t, "and", token.Value, "unexpected token value")
+
+	token = lex.NextToken()
+	testutils.AssertEqualString(t, lexer.TokenTypeIdentifier.String(), token.Type.String(), "unexpected token type")
+	testutils.AssertEqualString(t, "another identifier", token.Value, "unexpected token value")
+
+	token = lex.NextToken()
+	testutils.AssertEqualString(t, lexer.TokenTypeIdentifier.String(), token.Type.String(), "unexpected token type")
+	testutils.AssertEqualString(t, "several", token.Value, "unexpected token value")
+
+	token = lex.NextToken()
+	testutils.AssertEqualString(t, lexer.TokenTypeIdentifier.String(), token.Type.String(), "unexpected token type")
+	testutils.AssertEqualString(t, "line", token.Value, "unexpected token value")
+
+	token = lex.NextToken()
+	testutils.AssertEqualString(t, lexer.TokenTypeEOF.String(), token.Type.String(), "unexpected token type")
+}
