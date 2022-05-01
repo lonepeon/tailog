@@ -2,14 +2,15 @@ package lexer
 
 import "fmt"
 
+var (
+	EqualSpecialCharacter    = SpecialCharacter{characters: []rune("=="), token: newTokenEqual()}
+	NotEqualSpecialCharacter = SpecialCharacter{characters: []rune("!="), token: newTokenNotEqual()}
+)
+
 type SpecialCharacter struct {
 	characters []rune
-	tokenType  TokenType
+	token      Token
 }
-
-var (
-	EqualSpecialCharacter = SpecialCharacter{characters: []rune("=="), tokenType: TokenTypeEqual}
-)
 
 func (c SpecialCharacter) Matches(content []rune) bool {
 	return startWith(content, c.characters)
@@ -24,5 +25,5 @@ func (c SpecialCharacter) Read(content []rune) (Token, []rune) {
 		return newTokenIllegal(fmt.Sprintf("expecting characters to be %s", string(c.characters))), content
 	}
 
-	return newTokenEqual(), content[len(c.characters):]
+	return c.token, content[len(c.characters):]
 }

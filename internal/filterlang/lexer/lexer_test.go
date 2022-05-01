@@ -10,7 +10,7 @@ import (
 func TestLex(t *testing.T) {
 	lex := lexer.NewLexer(`
 	name == "another identifier"
-	several line
+	several != line
 	`)
 
 	token := lex.NextToken()
@@ -28,6 +28,10 @@ func TestLex(t *testing.T) {
 	token = lex.NextToken()
 	testutils.AssertEqualString(t, lexer.TokenTypeIdentifier.String(), token.Type.String(), "unexpected token type")
 	testutils.AssertEqualString(t, "several", token.Value, "unexpected token value")
+
+	token = lex.NextToken()
+	testutils.AssertEqualString(t, lexer.TokenTypeNotEqual.String(), token.Type.String(), "unexpected token type")
+	testutils.AssertEqualString(t, "", token.Value, "unexpected token value")
 
 	token = lex.NextToken()
 	testutils.AssertEqualString(t, lexer.TokenTypeIdentifier.String(), token.Type.String(), "unexpected token type")

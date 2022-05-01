@@ -13,6 +13,7 @@ var (
 	TokenTypeEOF        = TokenType{name: "EOF"}
 	TokenTypeIdentifier = TokenType{name: "Identifier"}
 	TokenTypeEqual      = TokenType{name: "Equal"}
+	TokenTypeNotEqual   = TokenType{name: "NotEqual"}
 )
 
 type Token struct {
@@ -34,4 +35,8 @@ func newTokenIdentifier(name string) Token {
 
 func newTokenEqual() Token {
 	return Token{Type: TokenTypeEqual, Value: ""}
+}
+
+func newTokenNotEqual() Token {
+	return Token{Type: TokenTypeNotEqual, Value: ""}
 }

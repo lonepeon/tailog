@@ -1,12 +1,17 @@
 package lexer
 
-type DoubleQuotesIdentifier struct{}
+var (
+	DoubleQuotesIdentifier = doubleQuotesIdentifier{}
+	NoQuotesIdentifier     = noQuotesIdentifier{}
+)
 
-func (i DoubleQuotesIdentifier) Matches(content []rune) bool {
+type doubleQuotesIdentifier struct{}
+
+func (i doubleQuotesIdentifier) Matches(content []rune) bool {
 	return startWithFn(content, isRune('"'))
 }
 
-func (i DoubleQuotesIdentifier) Read(content []rune) (Token, []rune) {
+func (i doubleQuotesIdentifier) Read(content []rune) (Token, []rune) {
 	if len(content) == 0 {
 		return newTokenEOF(), content
 	}
@@ -28,13 +33,13 @@ func (i DoubleQuotesIdentifier) Read(content []rune) (Token, []rune) {
 	return newTokenIdentifier(identifier), remaining[1:]
 }
 
-type NoQuotesIdentifier struct{}
+type noQuotesIdentifier struct{}
 
-func (i NoQuotesIdentifier) Matches(content []rune) bool {
+func (i noQuotesIdentifier) Matches(content []rune) bool {
 	return startWithFn(content, isAlpha)
 }
 
-func (i NoQuotesIdentifier) Read(content []rune) (Token, []rune) {
+func (i noQuotesIdentifier) Read(content []rune) (Token, []rune) {
 	if len(content) == 0 {
 		return newTokenEOF(), content
 	}

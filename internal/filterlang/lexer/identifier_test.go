@@ -16,7 +16,7 @@ func TestLexIdentifierNoQuotesMatches(t *testing.T) {
 
 	runner := func(name string, tc TestCase) {
 		t.Run(name, func(t *testing.T) {
-			match := lexer.NoQuotesIdentifier{}.Matches(tc.Input)
+			match := lexer.NoQuotesIdentifier.Matches(tc.Input)
 			testutils.AssertEqualBool(t, tc.Matches, match, "unexpected content match")
 		})
 	}
@@ -58,7 +58,7 @@ func TestLexIdentifierNoQuotesRead(t *testing.T) {
 
 	runner := func(name string, tc TestCase) {
 		t.Run(name, func(t *testing.T) {
-			token, remaining := lexer.NoQuotesIdentifier{}.Read(tc.Input)
+			token, remaining := lexer.NoQuotesIdentifier.Read(tc.Input)
 			testutils.AssertEqualString(t, tc.TokenType.String(), token.Type.String(), "unexpected token type")
 			testutils.AssertEqualString(t, tc.TokenValue, token.Value, "unexpected token value")
 			testutils.AssertEqualString(t, string(tc.Remaining), string(remaining), "unexpected remaining input")
@@ -152,7 +152,7 @@ func TestLexIdentifierDoubleQuotesMatches(t *testing.T) {
 
 	runner := func(name string, tc TestCase) {
 		t.Run(name, func(t *testing.T) {
-			match := lexer.DoubleQuotesIdentifier{}.Matches(tc.Input)
+			match := lexer.DoubleQuotesIdentifier.Matches(tc.Input)
 			testutils.AssertEqualBool(t, tc.Matches, match, "unexpected content match")
 		})
 	}
@@ -199,7 +199,7 @@ func TestLexIdentifierDoubleQuotesRead(t *testing.T) {
 
 	runner := func(name string, tc TestCase) {
 		t.Run(name, func(t *testing.T) {
-			token, remaining := lexer.DoubleQuotesIdentifier{}.Read(tc.Input)
+			token, remaining := lexer.DoubleQuotesIdentifier.Read(tc.Input)
 			testutils.AssertEqualString(t, tc.TokenType.String(), token.Type.String(), "unexpected token type")
 			testutils.AssertEqualString(t, tc.TokenValue, token.Value, "unexpected token value")
 			testutils.AssertEqualString(t, string(tc.Remaining), string(remaining), "unexpected remaining input")
