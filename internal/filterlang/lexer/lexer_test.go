@@ -10,7 +10,7 @@ import (
 func TestLex(t *testing.T) {
 	lex := lexer.NewLexer(`
 	name == "another identifier"
-	several != line
+	42 != 13.37
 	`)
 
 	token := lex.NextToken()
@@ -26,16 +26,16 @@ func TestLex(t *testing.T) {
 	testutils.AssertEqualString(t, "another identifier", token.Value, "unexpected token value")
 
 	token = lex.NextToken()
-	testutils.AssertEqualString(t, lexer.TokenTypeIdentifier.String(), token.Type.String(), "unexpected token type")
-	testutils.AssertEqualString(t, "several", token.Value, "unexpected token value")
+	testutils.AssertEqualString(t, lexer.TokenTypeNumber.String(), token.Type.String(), "unexpected token type")
+	testutils.AssertEqualString(t, "42", token.Value, "unexpected token value")
 
 	token = lex.NextToken()
 	testutils.AssertEqualString(t, lexer.TokenTypeNotEqual.String(), token.Type.String(), "unexpected token type")
 	testutils.AssertEqualString(t, "", token.Value, "unexpected token value")
 
 	token = lex.NextToken()
-	testutils.AssertEqualString(t, lexer.TokenTypeIdentifier.String(), token.Type.String(), "unexpected token type")
-	testutils.AssertEqualString(t, "line", token.Value, "unexpected token value")
+	testutils.AssertEqualString(t, lexer.TokenTypeNumber.String(), token.Type.String(), "unexpected token type")
+	testutils.AssertEqualString(t, "13.37", token.Value, "unexpected token value")
 
 	token = lex.NextToken()
 	testutils.AssertEqualString(t, lexer.TokenTypeEOF.String(), token.Type.String(), "unexpected token type")

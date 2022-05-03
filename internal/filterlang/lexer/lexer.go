@@ -18,6 +18,7 @@ func NewLexer(content string) *Lexer {
 			NotEqualSpecialCharacter,
 			DoubleQuotesIdentifier,
 			NoQuotesIdentifier,
+			Number,
 		},
 	}
 }
