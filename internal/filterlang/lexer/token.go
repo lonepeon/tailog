@@ -15,6 +15,8 @@ var (
 	TokenTypeEqual      = TokenType{name: "Equal"}
 	TokenTypeNotEqual   = TokenType{name: "NotEqual"}
 	TokenTypeNumber     = TokenType{name: "Number"}
+	TokenTypeAnd        = TokenType{name: "And"}
+	TokenTypeOr         = TokenType{name: "Or"}
 )
 
 type Token struct {
@@ -44,4 +46,12 @@ func newTokenNotEqual() Token {
 
 func newTokenNumber(value string) Token {
 	return Token{Type: TokenTypeNumber, Value: value}
+}
+
+func newTokenAnd() Token {
+	return Token{Type: TokenTypeAnd, Value: ""}
+}
+
+func newTokenOr() Token {
+	return Token{Type: TokenTypeOr, Value: ""}
 }

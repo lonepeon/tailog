@@ -7,10 +7,11 @@ import (
 	"github.com/lonepeon/tailog/internal/filterlang/lexer"
 )
 
+// nolint:funlen
 func TestLex(t *testing.T) {
 	lex := lexer.NewLexer(`
-	name == "another identifier"
-	42 != 13.37
+	name == "another identifier" || 12 == something
+	42 != 13.37 && id == "something else"
 	`)
 
 	token := lex.NextToken()
@@ -26,6 +27,22 @@ func TestLex(t *testing.T) {
 	testutils.AssertEqualString(t, "another identifier", token.Value, "unexpected token value")
 
 	token = lex.NextToken()
+	testutils.AssertEqualString(t, lexer.TokenTypeOr.String(), token.Type.String(), "unexpected token type")
+	testutils.AssertEqualString(t, "", token.Value, "unexpected token value")
+
+	token = lex.NextToken()
+	testutils.AssertEqualString(t, lexer.TokenTypeNumber.String(), token.Type.String(), "unexpected token type")
+	testutils.AssertEqualString(t, "12", token.Value, "unexpected token value")
+
+	token = lex.NextToken()
+	testutils.AssertEqualString(t, lexer.TokenTypeEqual.String(), token.Type.String(), "unexpected token type")
+	testutils.AssertEqualString(t, "", token.Value, "unexpected token value")
+
+	token = lex.NextToken()
+	testutils.AssertEqualString(t, lexer.TokenTypeIdentifier.String(), token.Type.String(), "unexpected token type")
+	testutils.AssertEqualString(t, "something", token.Value, "unexpected token value")
+
+	token = lex.NextToken()
 	testutils.AssertEqualString(t, lexer.TokenTypeNumber.String(), token.Type.String(), "unexpected token type")
 	testutils.AssertEqualString(t, "42", token.Value, "unexpected token value")
 
@@ -36,6 +53,22 @@ func TestLex(t *testing.T) {
 	token = lex.NextToken()
 	testutils.AssertEqualString(t, lexer.TokenTypeNumber.String(), token.Type.String(), "unexpected token type")
 	testutils.AssertEqualString(t, "13.37", token.Value, "unexpected token value")
+
+	token = lex.NextToken()
+	testutils.AssertEqualString(t, lexer.TokenTypeAnd.String(), token.Type.String(), "unexpected token type")
+	testutils.AssertEqualString(t, "", token.Value, "unexpected token value")
+
+	token = lex.NextToken()
+	testutils.AssertEqualString(t, lexer.TokenTypeIdentifier.String(), token.Type.String(), "unexpected token type")
+	testutils.AssertEqualString(t, "id", token.Value, "unexpected token value")
+
+	token = lex.NextToken()
+	testutils.AssertEqualString(t, lexer.TokenTypeEqual.String(), token.Type.String(), "unexpected token type")
+	testutils.AssertEqualString(t, "", token.Value, "unexpected token value")
+
+	token = lex.NextToken()
+	testutils.AssertEqualString(t, lexer.TokenTypeIdentifier.String(), token.Type.String(), "unexpected token type")
+	testutils.AssertEqualString(t, "something else", token.Value, "unexpected token value")
 
 	token = lex.NextToken()
 	testutils.AssertEqualString(t, lexer.TokenTypeEOF.String(), token.Type.String(), "unexpected token type")

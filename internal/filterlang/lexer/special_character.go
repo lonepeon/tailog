@@ -5,6 +5,8 @@ import "fmt"
 var (
 	EqualSpecialCharacter    = SpecialCharacter{characters: []rune("=="), token: newTokenEqual()}
 	NotEqualSpecialCharacter = SpecialCharacter{characters: []rune("!="), token: newTokenNotEqual()}
+	AndSpecialCharacter      = SpecialCharacter{characters: []rune("&&"), token: newTokenAnd()}
+	OrSpecialCharacter       = SpecialCharacter{characters: []rune("||"), token: newTokenOr()}
 )
 
 type SpecialCharacter struct {

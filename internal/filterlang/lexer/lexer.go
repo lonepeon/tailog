@@ -16,6 +16,8 @@ func NewLexer(content string) *Lexer {
 		registry: []TokenReader{
 			EqualSpecialCharacter,
 			NotEqualSpecialCharacter,
+			AndSpecialCharacter,
+			OrSpecialCharacter,
 			DoubleQuotesIdentifier,
 			NoQuotesIdentifier,
 			Number,
