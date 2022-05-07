@@ -12,7 +12,7 @@ func (n number) Matches(content []rune) bool {
 
 func (n number) Read(content []rune) (Token, []rune) {
 	if len(content) == 0 {
-		return newTokenEOF(), content
+		return NewTokenEOF(), content
 	}
 
 	integer, remaining, found := readWhile(content, func(c rune) bool {
@@ -20,11 +20,11 @@ func (n number) Read(content []rune) (Token, []rune) {
 	})
 
 	if !found {
-		return newTokenIllegal("didn't detect any integer number"), content
+		return NewTokenIllegal("didn't detect any integer number"), content
 	}
 
 	if !startWith(remaining, []rune(".")) {
-		return newTokenNumber(integer), remaining
+		return NewTokenNumber(integer), remaining
 	}
 
 	fraction, remaining, found := readWhile(remaining[1:], func(c rune) bool {
@@ -32,8 +32,8 @@ func (n number) Read(content []rune) (Token, []rune) {
 	})
 
 	if !found {
-		return newTokenIllegal("didn't detect any number after the decimal separator"), content
+		return NewTokenIllegal("didn't detect any number after the decimal separator"), content
 	}
 
-	return newTokenNumber(integer + "." + fraction), remaining
+	return NewTokenNumber(integer + "." + fraction), remaining
 }

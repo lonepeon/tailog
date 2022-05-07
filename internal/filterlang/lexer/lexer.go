@@ -29,7 +29,7 @@ func (l *Lexer) NextToken() Token {
 	l.content = EatSpaces(l.content)
 
 	if len(l.content) == 0 {
-		return newTokenEOF()
+		return NewTokenEOF()
 	}
 
 	for i := range l.registry {
@@ -42,5 +42,5 @@ func (l *Lexer) NextToken() Token {
 		return token
 	}
 
-	return newTokenIllegal("unparsable input")
+	return NewTokenIllegal("unparsable input")
 }

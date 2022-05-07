@@ -24,34 +24,34 @@ type Token struct {
 	Value string
 }
 
-func newTokenEOF() Token {
+func NewTokenEOF() Token {
 	return Token{Type: TokenTypeEOF, Value: ""}
 }
 
-func newTokenIllegal(reason string) Token {
+func NewTokenIllegal(reason string) Token {
 	return Token{Type: TokenTypeIllegal, Value: reason}
 }
 
-func newTokenIdentifier(name string) Token {
+func NewTokenIdentifier(name string) Token {
 	return Token{Type: TokenTypeIdentifier, Value: name}
 }
 
-func newTokenEqual() Token {
+func NewTokenEqual() Token {
 	return Token{Type: TokenTypeEqual, Value: ""}
 }
 
-func newTokenNotEqual() Token {
+func NewTokenNotEqual() Token {
 	return Token{Type: TokenTypeNotEqual, Value: ""}
 }
 
-func newTokenNumber(value string) Token {
+func NewTokenNumber(value string) Token {
 	return Token{Type: TokenTypeNumber, Value: value}
 }
 
-func newTokenAnd() Token {
+func NewTokenAnd() Token {
 	return Token{Type: TokenTypeAnd, Value: ""}
 }
 
-func newTokenOr() Token {
+func NewTokenOr() Token {
 	return Token{Type: TokenTypeOr, Value: ""}
 }

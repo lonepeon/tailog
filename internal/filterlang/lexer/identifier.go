@@ -13,24 +13,24 @@ func (i doubleQuotesIdentifier) Matches(content []rune) bool {
 
 func (i doubleQuotesIdentifier) Read(content []rune) (Token, []rune) {
 	if len(content) == 0 {
-		return newTokenEOF(), content
+		return NewTokenEOF(), content
 	}
 
 	if !startWithFn(content, func(c rune) bool { return c == '"' }) {
-		return newTokenIllegal("expecting identifier's opening double quote character"), content
+		return NewTokenIllegal("expecting identifier's opening double quote character"), content
 	}
 
 	identifier, remaining, found := readWhile(content[1:], func(c rune) bool { return c != '"' })
 
 	if !found {
-		return newTokenIllegal("didn't detect any identifier"), content
+		return NewTokenIllegal("didn't detect any identifier"), content
 	}
 
 	if !startWithFn(remaining, func(c rune) bool { return c == '"' }) {
-		return newTokenIllegal("expecting identifier's closing double quote character"), content
+		return NewTokenIllegal("expecting identifier's closing double quote character"), content
 	}
 
-	return newTokenIdentifier(identifier), remaining[1:]
+	return NewTokenIdentifier(identifier), remaining[1:]
 }
 
 type noQuotesIdentifier struct{}
@@ -41,11 +41,11 @@ func (i noQuotesIdentifier) Matches(content []rune) bool {
 
 func (i noQuotesIdentifier) Read(content []rune) (Token, []rune) {
 	if len(content) == 0 {
-		return newTokenEOF(), content
+		return NewTokenEOF(), content
 	}
 
 	if !startWithFn(content, isAlpha) {
-		return newTokenIllegal("expecting identifier to start with an alphabetic character"), content
+		return NewTokenIllegal("expecting identifier to start with an alphabetic character"), content
 	}
 
 	identifier, remaining, found := readWhile(content, func(c rune) bool {
@@ -53,8 +53,8 @@ func (i noQuotesIdentifier) Read(content []rune) (Token, []rune) {
 	})
 
 	if !found {
-		return newTokenIllegal("didn't detect any identifier"), content
+		return NewTokenIllegal("didn't detect any identifier"), content
 	}
 
-	return newTokenIdentifier(identifier), remaining
+	return NewTokenIdentifier(identifier), remaining
 }
