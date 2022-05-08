@@ -8,38 +8,34 @@ import (
 	"github.com/lonepeon/tailog/internal/filterlang/lexer"
 )
 
-func TestCondition(t *testing.T) {
-	type TestCase struct {
-		Tokens      []lexer.Token
-		ExpectedAST ast.AST
-	}
-
-	runner := func(name string, tc TestCase) {
+func TestSimpleCondition(t *testing.T) {
+	runner := func(name string, comparisonToken lexer.Token, expectedComparison ast.Comparison) {
 		t.Run(name, func(t *testing.T) {
-			lex := NewFakeLexer(tc.Tokens)
+			lex := NewFakeLexer([]lexer.Token{
+				lexer.NewTokenIdentifier("http.status"),
+				comparisonToken,
+				lexer.NewTokenNumber("200"),
+			})
+
+			expectedAST := ast.AST{
+				Condition: ast.NewCondition(
+					ast.NewLabelValue("http.status"),
+					expectedComparison,
+					ast.NewNumberValue(200),
+				),
+			}
+
 			actualAST, err := ast.Parse(lex)
 			testutils.RequireNoError(t, err, "expecting to parse lexed tokens")
 
-			if tc.ExpectedAST.Condition != actualAST.Condition {
-				t.Errorf("invalid AST\nexpected:\n%v\n\nactual:\n%v\n", tc.ExpectedAST, actualAST)
+			if expectedAST.Condition != actualAST.Condition {
+				t.Errorf("invalid AST\nexpected:\n%v\n\nactual:\n%v\n", expectedAST, actualAST)
 			}
 		})
 	}
 
-	runner("simpleEqualCondition", TestCase{
-		Tokens: []lexer.Token{
-			lexer.NewTokenIdentifier("http.status"),
-			lexer.NewTokenEqual(),
-			lexer.NewTokenNumber("200"),
-		},
-		ExpectedAST: ast.AST{
-			Condition: ast.NewCondition(
-				ast.NewLabelValue("http.status"),
-				ast.ComparisonEqual,
-				ast.NewNumberValue(200),
-			),
-		},
-	})
+	runner("simpleEqualCondition", lexer.NewTokenEqual(), ast.ComparisonEqual)
+	runner("simpleNotEqualCondition", lexer.NewTokenNotEqual(), ast.ComparisonNotEqual)
 }
 
 type Lexer struct {

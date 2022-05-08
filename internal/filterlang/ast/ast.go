@@ -22,6 +22,7 @@ func (s Comparison) String() string {
 var (
 	ComparisonUndefined = Comparison{name: "undefined"}
 	ComparisonEqual     = Comparison{name: "equal"}
+	ComparisonNotEqual  = Comparison{name: "not equal"}
 )
 
 type LabelValue struct {
@@ -137,7 +138,9 @@ func readComparison(token lexer.Token) (Comparison, error) {
 	switch token.Type {
 	case lexer.TokenTypeEqual:
 		return ComparisonEqual, nil
+	case lexer.TokenTypeNotEqual:
+		return ComparisonNotEqual, nil
 	default:
-		return ComparisonUndefined, fmt.Errorf("expecting an Equal token but got %s", token)
+		return ComparisonUndefined, fmt.Errorf("expecting an Equal or NotEqual token but got %s", token)
 	}
 }

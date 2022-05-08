@@ -1,5 +1,7 @@
 package lexer
 
+import "fmt"
+
 type TokenType struct {
 	name string
 }
@@ -22,6 +24,14 @@ var (
 type Token struct {
 	Type  TokenType
 	Value string
+}
+
+func (t Token) String() string {
+	if t.Value == "" {
+		return t.Type.String()
+	}
+
+	return fmt.Sprintf("%s(%q)", t.Type, t.Value)
 }
 
 func NewTokenEOF() Token {
