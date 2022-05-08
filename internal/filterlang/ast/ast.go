@@ -25,21 +25,37 @@ var (
 )
 
 type LabelValue struct {
-	Value string
+	value string
+}
+
+func NewLabelValue(labelName string) LabelValue {
+	return LabelValue{value: labelName}
+}
+
+func (l LabelValue) Value() string {
+	return l.value
 }
 
 func (l LabelValue) String() string {
-	return fmt.Sprintf("label(%q)", l.Value)
+	return fmt.Sprintf("label(%q)", l.value)
 }
 
 func (l LabelValue) isValue() {}
 
 type NumberValue struct {
-	Value float64
+	value float64
+}
+
+func NewNumberValue(value float64) NumberValue {
+	return NumberValue{value: value}
+}
+
+func (l NumberValue) Value() float64 {
+	return l.value
 }
 
 func (n NumberValue) String() string {
-	return fmt.Sprintf("%f", n.Value)
+	return fmt.Sprintf("%f", n.value)
 }
 
 func (n NumberValue) isValue() {}
@@ -50,13 +66,29 @@ type Valuer interface {
 }
 
 type Condition struct {
-	Left       Valuer
-	Comparison Comparison
-	Right      Valuer
+	left       Valuer
+	comparison Comparison
+	right      Valuer
+}
+
+func NewCondition(left Valuer, comparison Comparison, right Valuer) Condition {
+	return Condition{left: left, comparison: comparison, right: right}
+}
+
+func (c Condition) Left() Valuer {
+	return c.left
+}
+
+func (c Condition) Right() Valuer {
+	return c.right
+}
+
+func (c Condition) Comparison() Comparison {
+	return c.comparison
 }
 
 func (c Condition) String() string {
-	return fmt.Sprintf("%s %s %s", c.Left, c.Comparison, c.Right)
+	return fmt.Sprintf("%s %s %s", c.left, c.comparison, c.right)
 }
 
 type AST struct {
@@ -67,7 +99,7 @@ func (a AST) String() string {
 	return a.Condition.String()
 }
 
-func From(lex Lexer) (AST, error) {
+func Parse(lex Lexer) (AST, error) {
 	left, err := readValue(lex.NextToken())
 	if err != nil {
 		return AST{}, fmt.Errorf("can't parse left side of the condition: %w", err)
@@ -83,25 +115,19 @@ func From(lex Lexer) (AST, error) {
 		return AST{}, fmt.Errorf("can't parse right side of the condition: %w", err)
 	}
 
-	return AST{
-		Condition: Condition{
-			Left:       left,
-			Comparison: comparison,
-			Right:      right,
-		},
-	}, nil
+	return AST{Condition: NewCondition(left, comparison, right)}, nil
 }
 
 func readValue(token lexer.Token) (Valuer, error) {
 	switch token.Type {
 	case lexer.TokenTypeIdentifier:
-		return LabelValue{Value: token.Value}, nil
+		return NewLabelValue(token.Value), nil
 	case lexer.TokenTypeNumber:
 		number, err := strconv.ParseFloat(token.Value, 64)
 		if err != nil {
 			return nil, fmt.Errorf("can't parse %q to number: %v", token.Value, err)
 		}
-		return NumberValue{Value: number}, nil
+		return NewNumberValue(number), nil
 	default:
 		return nil, fmt.Errorf("expecting an Identifier or Number type of token but got %s", token)
 	}
