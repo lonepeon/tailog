@@ -154,35 +154,45 @@ func (a AST) String() string {
 }
 
 func Parse(lex Lexer) (AST, error) {
-	leftExpression, err := readExpression(lex)
+	var condition Condition
+
+	condition, err := readExpression(lex)
 	if err != nil {
 		return AST{}, err
 	}
 
-	token := lex.NextToken()
-	if token == lexer.NewTokenEOF() {
-		return AST{Condition: leftExpression}, nil
+	for {
+		token := lex.NextToken()
+		if token == lexer.NewTokenEOF() {
+			return AST{Condition: condition}, nil
+		}
 
+		condition, err = readLogicalOperator(lex, condition, token)
+		if err != nil {
+			return AST{}, err
+		}
 	}
+}
 
-	switch token.Type {
+func readLogicalOperator(lex Lexer, currentCondition Condition, currentToken lexer.Token) (Condition, error) {
+	switch currentToken.Type {
 	case lexer.TokenTypeAnd:
-		rightExpression, err := readExpression(lex)
+		otherExpression, err := readExpression(lex)
 		if err != nil {
-			return AST{}, err
+			return nil, err
 		}
 
-		return AST{Condition: NewConditionAnd(leftExpression, rightExpression)}, nil
+		return NewConditionAnd(currentCondition, otherExpression), nil
 	case lexer.TokenTypeOr:
-		rightExpression, err := readExpression(lex)
+		otherExpression, err := readExpression(lex)
 		if err != nil {
-			return AST{}, err
+			return nil, err
 		}
 
-		return AST{Condition: NewConditionOr(leftExpression, rightExpression)}, nil
+		return NewConditionOr(currentCondition, otherExpression), nil
 	}
 
-	return AST{}, fmt.Errorf("expecting an And or Or token but got %s", token)
+	return nil, fmt.Errorf("expecting a And or Or token but got %s", currentToken)
 }
 
 func readExpression(lex Lexer) (ConditionExpression, error) {
