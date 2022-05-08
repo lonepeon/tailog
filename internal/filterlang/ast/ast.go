@@ -66,29 +66,82 @@ type Valuer interface {
 	String() string
 }
 
-type Condition struct {
+type Condition interface {
+	isCondition()
+	String() string
+}
+
+type ConditionAnd struct {
+	left  Condition
+	right Condition
+}
+
+func NewConditionAnd(left Condition, right Condition) ConditionAnd {
+	return ConditionAnd{left: left, right: right}
+}
+
+func (c ConditionAnd) isCondition() {}
+
+func (c ConditionAnd) Left() Condition {
+	return c.left
+}
+
+func (c ConditionAnd) Right() Condition {
+	return c.right
+}
+
+func (c ConditionAnd) String() string {
+	return fmt.Sprintf("(%s and %s)", c.left, c.right)
+}
+
+type ConditionOr struct {
+	left  Condition
+	right Condition
+}
+
+func NewConditionOr(left Condition, right Condition) ConditionOr {
+	return ConditionOr{left: left, right: right}
+}
+
+func (c ConditionOr) isCondition() {}
+
+func (c ConditionOr) Left() Condition {
+	return c.left
+}
+
+func (c ConditionOr) Right() Condition {
+	return c.right
+}
+
+func (c ConditionOr) String() string {
+	return fmt.Sprintf("(%s or %s)", c.left, c.right)
+}
+
+type ConditionExpression struct {
 	left       Valuer
 	comparison Comparison
 	right      Valuer
 }
 
-func NewCondition(left Valuer, comparison Comparison, right Valuer) Condition {
-	return Condition{left: left, comparison: comparison, right: right}
+func NewConditionExpression(left Valuer, comparison Comparison, right Valuer) ConditionExpression {
+	return ConditionExpression{left: left, comparison: comparison, right: right}
 }
 
-func (c Condition) Left() Valuer {
+func (c ConditionExpression) isCondition() {}
+
+func (c ConditionExpression) Left() Valuer {
 	return c.left
 }
 
-func (c Condition) Right() Valuer {
+func (c ConditionExpression) Right() Valuer {
 	return c.right
 }
 
-func (c Condition) Comparison() Comparison {
+func (c ConditionExpression) Comparison() Comparison {
 	return c.comparison
 }
 
-func (c Condition) String() string {
+func (c ConditionExpression) String() string {
 	return fmt.Sprintf("%s %s %s", c.left, c.comparison, c.right)
 }
 
@@ -101,22 +154,54 @@ func (a AST) String() string {
 }
 
 func Parse(lex Lexer) (AST, error) {
+	leftExpression, err := readExpression(lex)
+	if err != nil {
+		return AST{}, err
+	}
+
+	token := lex.NextToken()
+	if token == lexer.NewTokenEOF() {
+		return AST{Condition: leftExpression}, nil
+
+	}
+
+	switch token.Type {
+	case lexer.TokenTypeAnd:
+		rightExpression, err := readExpression(lex)
+		if err != nil {
+			return AST{}, err
+		}
+
+		return AST{Condition: NewConditionAnd(leftExpression, rightExpression)}, nil
+	case lexer.TokenTypeOr:
+		rightExpression, err := readExpression(lex)
+		if err != nil {
+			return AST{}, err
+		}
+
+		return AST{Condition: NewConditionOr(leftExpression, rightExpression)}, nil
+	}
+
+	return AST{}, fmt.Errorf("expecting an And or Or token but got %s", token)
+}
+
+func readExpression(lex Lexer) (ConditionExpression, error) {
 	left, err := readValue(lex.NextToken())
 	if err != nil {
-		return AST{}, fmt.Errorf("can't parse left side of the condition: %w", err)
+		return ConditionExpression{}, fmt.Errorf("can't parse left side of the condition: %w", err)
 	}
 
 	comparison, err := readComparison(lex.NextToken())
 	if err != nil {
-		return AST{}, fmt.Errorf("can't parse condition comparison: %w", err)
+		return ConditionExpression{}, fmt.Errorf("can't parse condition comparison: %w", err)
 	}
 
 	right, err := readValue(lex.NextToken())
 	if err != nil {
-		return AST{}, fmt.Errorf("can't parse right side of the condition: %w", err)
+		return ConditionExpression{}, fmt.Errorf("can't parse right side of the condition: %w", err)
 	}
 
-	return AST{Condition: NewCondition(left, comparison, right)}, nil
+	return NewConditionExpression(left, comparison, right), nil
 }
 
 func readValue(token lexer.Token) (Valuer, error) {
