@@ -154,22 +154,31 @@ func (a AST) String() string {
 }
 
 func Parse(lex Lexer) (AST, error) {
+	condition, err := readCondition(lex)
+	if err != nil {
+		return AST{}, err
+	}
+
+	return AST{Condition: condition}, nil
+}
+
+func readCondition(lex Lexer) (Condition, error) {
 	var condition Condition
 
 	condition, err := readExpression(lex)
 	if err != nil {
-		return AST{}, err
+		return nil, err
 	}
 
 	for {
 		token := lex.NextToken()
 		if token == lexer.NewTokenEOF() {
-			return AST{Condition: condition}, nil
+			return condition, nil
 		}
 
 		condition, err = readLogicalOperator(lex, condition, token)
 		if err != nil {
-			return AST{}, err
+			return nil, err
 		}
 	}
 }
@@ -184,7 +193,7 @@ func readLogicalOperator(lex Lexer, currentCondition Condition, currentToken lex
 
 		return NewConditionAnd(currentCondition, otherExpression), nil
 	case lexer.TokenTypeOr:
-		otherExpression, err := readExpression(lex)
+		otherExpression, err := readCondition(lex)
 		if err != nil {
 			return nil, err
 		}

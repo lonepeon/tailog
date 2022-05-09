@@ -106,7 +106,7 @@ func TestOrOperator(t *testing.T) {
 	}
 }
 
-func TestMultipleOperators(t *testing.T) {
+func TestAndOrOperators(t *testing.T) {
 	lex := NewFakeLexer([]lexer.Token{
 		lexer.NewTokenIdentifier("http.status"),
 		lexer.NewTokenEqual(),
@@ -139,6 +139,51 @@ func TestMultipleOperators(t *testing.T) {
 				ast.NewLabelValue("user.id"),
 				ast.ComparisonNotEqual,
 				ast.NewNumberValue(1337),
+			),
+		),
+	}
+
+	actualAST, err := ast.Parse(lex)
+	testutils.RequireNoError(t, err, "expecting to parse lexed tokens")
+
+	if expectedAST.Condition != actualAST.Condition {
+		t.Errorf("invalid AST\nexpected:\n%v\n\nactual:\n%v\n", expectedAST, actualAST)
+	}
+}
+
+func TestOrAndOperators(t *testing.T) {
+	lex := NewFakeLexer([]lexer.Token{
+		lexer.NewTokenIdentifier("user.id"),
+		lexer.NewTokenNotEqual(),
+		lexer.NewTokenNumber("42"),
+		lexer.NewTokenOr(),
+		lexer.NewTokenIdentifier("http.status"),
+		lexer.NewTokenEqual(),
+		lexer.NewTokenNumber("200"),
+		lexer.NewTokenAnd(),
+		lexer.NewTokenIdentifier("user.id"),
+		lexer.NewTokenNotEqual(),
+		lexer.NewTokenNumber("1337"),
+	})
+
+	expectedAST := ast.AST{
+		Condition: ast.NewConditionOr(
+			ast.NewConditionExpression(
+				ast.NewLabelValue("user.id"),
+				ast.ComparisonNotEqual,
+				ast.NewNumberValue(42),
+			),
+			ast.NewConditionAnd(
+				ast.NewConditionExpression(
+					ast.NewLabelValue("http.status"),
+					ast.ComparisonEqual,
+					ast.NewNumberValue(200),
+				),
+				ast.NewConditionExpression(
+					ast.NewLabelValue("user.id"),
+					ast.ComparisonNotEqual,
+					ast.NewNumberValue(1337),
+				),
 			),
 		),
 	}
