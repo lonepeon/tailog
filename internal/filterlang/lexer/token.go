@@ -11,14 +11,14 @@ func (t TokenType) String() string {
 }
 
 var (
-	TokenTypeIllegal    = TokenType{name: "Illegal"}
-	TokenTypeEOF        = TokenType{name: "EOF"}
-	TokenTypeIdentifier = TokenType{name: "Identifier"}
-	TokenTypeEqual      = TokenType{name: "Equal"}
-	TokenTypeNotEqual   = TokenType{name: "NotEqual"}
-	TokenTypeNumber     = TokenType{name: "Number"}
-	TokenTypeAnd        = TokenType{name: "And"}
-	TokenTypeOr         = TokenType{name: "Or"}
+	TokenTypeIllegal  = TokenType{name: "Illegal"}
+	TokenTypeEOF      = TokenType{name: "EOF"}
+	TokenTypeField    = TokenType{name: "Field"}
+	TokenTypeEqual    = TokenType{name: "Equal"}
+	TokenTypeNotEqual = TokenType{name: "NotEqual"}
+	TokenTypeNumber   = TokenType{name: "Number"}
+	TokenTypeAnd      = TokenType{name: "And"}
+	TokenTypeOr       = TokenType{name: "Or"}
 )
 
 type Token struct {
@@ -42,8 +42,8 @@ func NewTokenIllegal(reason string) Token {
 	return Token{Type: TokenTypeIllegal, Value: reason}
 }
 
-func NewTokenIdentifier(name string) Token {
-	return Token{Type: TokenTypeIdentifier, Value: name}
+func NewTokenField(name string) Token {
+	return Token{Type: TokenTypeField, Value: name}
 }
 
 func NewTokenEqual() Token {

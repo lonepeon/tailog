@@ -225,7 +225,7 @@ func readExpression(lex Lexer) (ConditionExpression, error) {
 
 func readValue(token lexer.Token) (Valuer, error) {
 	switch token.Type {
-	case lexer.TokenTypeIdentifier:
+	case lexer.TokenTypeField:
 		return NewLabelValue(token.Value), nil
 	case lexer.TokenTypeNumber:
 		number, err := strconv.ParseFloat(token.Value, 64)

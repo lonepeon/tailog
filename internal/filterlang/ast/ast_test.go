@@ -12,7 +12,7 @@ func TestSimpleCondition(t *testing.T) {
 	runner := func(name string, comparisonToken lexer.Token, expectedComparison ast.Comparison) {
 		t.Run(name, func(t *testing.T) {
 			lex := NewFakeLexer([]lexer.Token{
-				lexer.NewTokenIdentifier("http.status"),
+				lexer.NewTokenField("http.status"),
 				comparisonToken,
 				lexer.NewTokenNumber("200"),
 			})
@@ -40,11 +40,11 @@ func TestSimpleCondition(t *testing.T) {
 
 func TestAndOperator(t *testing.T) {
 	lex := NewFakeLexer([]lexer.Token{
-		lexer.NewTokenIdentifier("http.status"),
+		lexer.NewTokenField("http.status"),
 		lexer.NewTokenEqual(),
 		lexer.NewTokenNumber("200"),
 		lexer.NewTokenAnd(),
-		lexer.NewTokenIdentifier("user.id"),
+		lexer.NewTokenField("user.id"),
 		lexer.NewTokenNotEqual(),
 		lexer.NewTokenNumber("42"),
 	})
@@ -74,11 +74,11 @@ func TestAndOperator(t *testing.T) {
 
 func TestOrOperator(t *testing.T) {
 	lex := NewFakeLexer([]lexer.Token{
-		lexer.NewTokenIdentifier("http.status"),
+		lexer.NewTokenField("http.status"),
 		lexer.NewTokenEqual(),
 		lexer.NewTokenNumber("200"),
 		lexer.NewTokenOr(),
-		lexer.NewTokenIdentifier("user.id"),
+		lexer.NewTokenField("user.id"),
 		lexer.NewTokenNotEqual(),
 		lexer.NewTokenNumber("42"),
 	})
@@ -108,15 +108,15 @@ func TestOrOperator(t *testing.T) {
 
 func TestAndOrOperators(t *testing.T) {
 	lex := NewFakeLexer([]lexer.Token{
-		lexer.NewTokenIdentifier("http.status"),
+		lexer.NewTokenField("http.status"),
 		lexer.NewTokenEqual(),
 		lexer.NewTokenNumber("200"),
 		lexer.NewTokenAnd(),
-		lexer.NewTokenIdentifier("user.id"),
+		lexer.NewTokenField("user.id"),
 		lexer.NewTokenNotEqual(),
 		lexer.NewTokenNumber("42"),
 		lexer.NewTokenOr(),
-		lexer.NewTokenIdentifier("user.id"),
+		lexer.NewTokenField("user.id"),
 		lexer.NewTokenNotEqual(),
 		lexer.NewTokenNumber("1337"),
 	})
@@ -153,15 +153,15 @@ func TestAndOrOperators(t *testing.T) {
 
 func TestOrAndOperators(t *testing.T) {
 	lex := NewFakeLexer([]lexer.Token{
-		lexer.NewTokenIdentifier("user.id"),
+		lexer.NewTokenField("user.id"),
 		lexer.NewTokenNotEqual(),
 		lexer.NewTokenNumber("42"),
 		lexer.NewTokenOr(),
-		lexer.NewTokenIdentifier("http.status"),
+		lexer.NewTokenField("http.status"),
 		lexer.NewTokenEqual(),
 		lexer.NewTokenNumber("200"),
 		lexer.NewTokenAnd(),
-		lexer.NewTokenIdentifier("user.id"),
+		lexer.NewTokenField("user.id"),
 		lexer.NewTokenNotEqual(),
 		lexer.NewTokenNumber("1337"),
 	})

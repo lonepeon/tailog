@@ -8,7 +8,7 @@ import (
 )
 
 // nolint:funlen
-func TestLexIdentifierNoQuotesMatches(t *testing.T) {
+func TestLexFieldNoQuotesMatches(t *testing.T) {
 	type TestCase struct {
 		Input   []rune
 		Matches bool
@@ -16,33 +16,33 @@ func TestLexIdentifierNoQuotesMatches(t *testing.T) {
 
 	runner := func(name string, tc TestCase) {
 		t.Run(name, func(t *testing.T) {
-			match := lexer.NoQuotesIdentifier.Matches(tc.Input)
+			match := lexer.NoQuotesField.Matches(tc.Input)
 			testutils.AssertEqualBool(t, tc.Matches, match, "unexpected content match")
 		})
 	}
 
 	runner("startWithAlphaCharacter", TestCase{
-		Input:   []rune(`lbl:name`),
+		Input:   []rune(`field:name`),
 		Matches: true,
 	})
 
 	runner("startWithUnderscore", TestCase{
-		Input:   []rune(`lbl:_name`),
+		Input:   []rune(`field:_name`),
 		Matches: false,
 	})
 
 	runner("startWithNumericCharacter", TestCase{
-		Input:   []rune(`lbl:42name`),
+		Input:   []rune(`field:42name`),
 		Matches: false,
 	})
 
 	runner("startWithDash", TestCase{
-		Input:   []rune(`lbl:-name`),
+		Input:   []rune(`field:-name`),
 		Matches: false,
 	})
 
 	runner("startWithSpace", TestCase{
-		Input:   []rune(`lbl: name`),
+		Input:   []rune(`field: name`),
 		Matches: false,
 	})
 
@@ -53,7 +53,7 @@ func TestLexIdentifierNoQuotesMatches(t *testing.T) {
 }
 
 // nolint:funlen
-func TestLexIdentifierNoQuotesRead(t *testing.T) {
+func TestLexFieldNoQuotesRead(t *testing.T) {
 	type TestCase struct {
 		Input      []rune
 		TokenType  lexer.TokenType
@@ -63,58 +63,58 @@ func TestLexIdentifierNoQuotesRead(t *testing.T) {
 
 	runner := func(name string, tc TestCase) {
 		t.Run(name, func(t *testing.T) {
-			token, remaining := lexer.NoQuotesIdentifier.Read(tc.Input)
+			token, remaining := lexer.NoQuotesField.Read(tc.Input)
 			testutils.AssertEqualString(t, tc.TokenType.String(), token.Type.String(), "unexpected token type")
 			testutils.AssertEqualString(t, tc.TokenValue, token.Value, "unexpected token value")
 			testutils.AssertEqualString(t, string(tc.Remaining), string(remaining), "unexpected remaining input")
 		})
 	}
 
-	runner("onlyIdentifier", TestCase{
-		Input:      []rune(`lbl:name`),
-		TokenType:  lexer.TokenTypeIdentifier,
+	runner("onlyField", TestCase{
+		Input:      []rune(`field:name`),
+		TokenType:  lexer.TokenTypeField,
 		TokenValue: "name",
 		Remaining:  []rune(""),
 	})
 
 	runner("alphaLowercaseCharacters", TestCase{
-		Input:      []rune(`lbl:name is great`),
-		TokenType:  lexer.TokenTypeIdentifier,
+		Input:      []rune(`field:name is great`),
+		TokenType:  lexer.TokenTypeField,
 		TokenValue: "name",
 		Remaining:  []rune(" is great"),
 	})
 
 	runner("alphaUppercaseCharacters", TestCase{
-		Input:      []rune(`lbl:NAME IS GREAT`),
-		TokenType:  lexer.TokenTypeIdentifier,
+		Input:      []rune(`field:NAME IS GREAT`),
+		TokenType:  lexer.TokenTypeField,
 		TokenValue: "NAME",
 		Remaining:  []rune(" IS GREAT"),
 	})
 
 	runner("alphanumCharacters", TestCase{
-		Input:      []rune(`lbl:Name42 is great`),
-		TokenType:  lexer.TokenTypeIdentifier,
+		Input:      []rune(`field:Name42 is great`),
+		TokenType:  lexer.TokenTypeField,
 		TokenValue: "Name42",
 		Remaining:  []rune(" is great"),
 	})
 
 	runner("alphanumAndUnderscoreCharacters", TestCase{
-		Input:      []rune(`lbl:Name_42 is great`),
-		TokenType:  lexer.TokenTypeIdentifier,
+		Input:      []rune(`field:Name_42 is great`),
+		TokenType:  lexer.TokenTypeField,
 		TokenValue: "Name_42",
 		Remaining:  []rune(" is great"),
 	})
 
 	runner("alphanumAndDashCharacters", TestCase{
-		Input:      []rune(`lbl:Name-42 is great`),
-		TokenType:  lexer.TokenTypeIdentifier,
+		Input:      []rune(`field:Name-42 is great`),
+		TokenType:  lexer.TokenTypeField,
 		TokenValue: "Name",
 		Remaining:  []rune("-42 is great"),
 	})
 
 	runner("alphanumAndDotCharacters", TestCase{
-		Input:      []rune(`lbl:Name.42 is great`),
-		TokenType:  lexer.TokenTypeIdentifier,
+		Input:      []rune(`field:Name.42 is great`),
+		TokenType:  lexer.TokenTypeField,
 		TokenValue: "Name",
 		Remaining:  []rune(".42 is great"),
 	})
@@ -127,29 +127,29 @@ func TestLexIdentifierNoQuotesRead(t *testing.T) {
 	})
 
 	runner("startWithNumericCharacter", TestCase{
-		Input:      []rune("lbl:42Name is not great"),
+		Input:      []rune("field:42Name is not great"),
 		TokenType:  lexer.TokenTypeIllegal,
-		TokenValue: "expecting identifier to start with an alphabetic character",
-		Remaining:  []rune("lbl:42Name is not great"),
+		TokenValue: "expecting field to start with an alphabetic character",
+		Remaining:  []rune("field:42Name is not great"),
 	})
 
 	runner("startWithSpecialCharacter", TestCase{
-		Input:      []rune("lbl:>Name is not great"),
+		Input:      []rune("field:>Name is not great"),
 		TokenType:  lexer.TokenTypeIllegal,
-		TokenValue: "expecting identifier to start with an alphabetic character",
-		Remaining:  []rune("lbl:>Name is not great"),
+		TokenValue: "expecting field to start with an alphabetic character",
+		Remaining:  []rune("field:>Name is not great"),
 	})
 
 	runner("startWithSpace", TestCase{
-		Input:      []rune("lbl: Name is not great"),
+		Input:      []rune("field: Name is not great"),
 		TokenType:  lexer.TokenTypeIllegal,
-		TokenValue: "expecting identifier to start with an alphabetic character",
-		Remaining:  []rune("lbl: Name is not great"),
+		TokenValue: "expecting field to start with an alphabetic character",
+		Remaining:  []rune("field: Name is not great"),
 	})
 }
 
 // nolint:funlen
-func TestLexIdentifierDoubleQuotesMatches(t *testing.T) {
+func TestLexFieldDoubleQuotesMatches(t *testing.T) {
 	type TestCase struct {
 		Input   []rune
 		Matches bool
@@ -157,44 +157,44 @@ func TestLexIdentifierDoubleQuotesMatches(t *testing.T) {
 
 	runner := func(name string, tc TestCase) {
 		t.Run(name, func(t *testing.T) {
-			match := lexer.DoubleQuotesIdentifier.Matches(tc.Input)
+			match := lexer.DoubleQuotesField.Matches(tc.Input)
 			testutils.AssertEqualBool(t, tc.Matches, match, "unexpected content match")
 		})
 	}
 
 	runner("startWithDoubleQuote", TestCase{
-		Input:   []rune(`lbl:"name"`),
+		Input:   []rune(`field:"name"`),
 		Matches: true,
 	})
 
 	runner("startWithAlphaCharacter", TestCase{
-		Input:   []rune(`lbl:name`),
+		Input:   []rune(`field:name`),
 		Matches: false,
 	})
 
 	runner("startWithUnderscore", TestCase{
-		Input:   []rune(`lbl:_name`),
+		Input:   []rune(`field:_name`),
 		Matches: false,
 	})
 
 	runner("startWithNumericCharacter", TestCase{
-		Input:   []rune(`lbl:42name`),
+		Input:   []rune(`field:42name`),
 		Matches: false,
 	})
 
 	runner("startWithDash", TestCase{
-		Input:   []rune(`lbl:-name`),
+		Input:   []rune(`field:-name`),
 		Matches: false,
 	})
 
 	runner("startWithSpace", TestCase{
-		Input:   []rune(`lbl: name`),
+		Input:   []rune(`field: name`),
 		Matches: false,
 	})
 }
 
 // nolint:funlen
-func TestLexIdentifierDoubleQuotesRead(t *testing.T) {
+func TestLexFieldDoubleQuotesRead(t *testing.T) {
 	type TestCase struct {
 		Input      []rune
 		TokenType  lexer.TokenType
@@ -204,79 +204,79 @@ func TestLexIdentifierDoubleQuotesRead(t *testing.T) {
 
 	runner := func(name string, tc TestCase) {
 		t.Run(name, func(t *testing.T) {
-			token, remaining := lexer.DoubleQuotesIdentifier.Read(tc.Input)
+			token, remaining := lexer.DoubleQuotesField.Read(tc.Input)
 			testutils.AssertEqualString(t, tc.TokenType.String(), token.Type.String(), "unexpected token type")
 			testutils.AssertEqualString(t, tc.TokenValue, token.Value, "unexpected token value")
 			testutils.AssertEqualString(t, string(tc.Remaining), string(remaining), "unexpected remaining input")
 		})
 	}
 
-	runner("onlyIdentifier", TestCase{
-		Input:      []rune(`lbl:"name"`),
-		TokenType:  lexer.TokenTypeIdentifier,
+	runner("onlyField", TestCase{
+		Input:      []rune(`field:"name"`),
+		TokenType:  lexer.TokenTypeField,
 		TokenValue: "name",
 		Remaining:  []rune(""),
 	})
 
 	runner("alphaLowercaseCharacters", TestCase{
-		Input:      []rune(`lbl:"name" is great`),
-		TokenType:  lexer.TokenTypeIdentifier,
+		Input:      []rune(`field:"name" is great`),
+		TokenType:  lexer.TokenTypeField,
 		TokenValue: "name",
 		Remaining:  []rune(" is great"),
 	})
 
 	runner("alphaUppercaseCharacters", TestCase{
-		Input:      []rune(`lbl:"NAME" IS GREAT`),
-		TokenType:  lexer.TokenTypeIdentifier,
+		Input:      []rune(`field:"NAME" IS GREAT`),
+		TokenType:  lexer.TokenTypeField,
 		TokenValue: "NAME",
 		Remaining:  []rune(" IS GREAT"),
 	})
 
 	runner("alphanumCharacters", TestCase{
-		Input:      []rune(`lbl:"Name42" is great`),
-		TokenType:  lexer.TokenTypeIdentifier,
+		Input:      []rune(`field:"Name42" is great`),
+		TokenType:  lexer.TokenTypeField,
 		TokenValue: "Name42",
 		Remaining:  []rune(" is great"),
 	})
 
 	runner("alphanumAndUnderscoreCharacters", TestCase{
-		Input:      []rune(`lbl:"Name_42" is great`),
-		TokenType:  lexer.TokenTypeIdentifier,
+		Input:      []rune(`field:"Name_42" is great`),
+		TokenType:  lexer.TokenTypeField,
 		TokenValue: "Name_42",
 		Remaining:  []rune(" is great"),
 	})
 
 	runner("alphanumAndDashCharacters", TestCase{
-		Input:      []rune(`lbl:"Name-42" is great`),
-		TokenType:  lexer.TokenTypeIdentifier,
+		Input:      []rune(`field:"Name-42" is great`),
+		TokenType:  lexer.TokenTypeField,
 		TokenValue: "Name-42",
 		Remaining:  []rune(" is great"),
 	})
 
 	runner("alphanumAndDotCharacters", TestCase{
-		Input:      []rune(`lbl:"Name.42" is great`),
-		TokenType:  lexer.TokenTypeIdentifier,
+		Input:      []rune(`field:"Name.42" is great`),
+		TokenType:  lexer.TokenTypeField,
 		TokenValue: "Name.42",
 		Remaining:  []rune(" is great"),
 	})
 
 	runner("alphanumAndSpaceCharacters", TestCase{
-		Input:      []rune(`lbl:"Name 42" is great`),
-		TokenType:  lexer.TokenTypeIdentifier,
+		Input:      []rune(`field:"Name 42" is great`),
+		TokenType:  lexer.TokenTypeField,
 		TokenValue: "Name 42",
 		Remaining:  []rune(" is great"),
 	})
 
 	runner("startsWithNumCharacter", TestCase{
-		Input:      []rune(`lbl:"42Name" is great`),
-		TokenType:  lexer.TokenTypeIdentifier,
+		Input:      []rune(`field:"42Name" is great`),
+		TokenType:  lexer.TokenTypeField,
 		TokenValue: "42Name",
 		Remaining:  []rune(" is great"),
 	})
 
 	runner("alphanumAndSpecialCharCharacters", TestCase{
-		Input:      []rune(`lbl:"Name/42" is great`),
-		TokenType:  lexer.TokenTypeIdentifier,
+		Input:      []rune(`field:"Name/42" is great`),
+		TokenType:  lexer.TokenTypeField,
 		TokenValue: "Name/42",
 		Remaining:  []rune(" is great"),
 	})
@@ -289,37 +289,37 @@ func TestLexIdentifierDoubleQuotesRead(t *testing.T) {
 	})
 
 	runner("startWithAlphaCharacter", TestCase{
-		Input:      []rune(`lbl:n"ame" is not great`),
+		Input:      []rune(`field:n"ame" is not great`),
 		TokenType:  lexer.TokenTypeIllegal,
-		TokenValue: "expecting identifier's opening double quote character",
-		Remaining:  []rune(`lbl:n"ame" is not great`),
+		TokenValue: "expecting field to start with double quote character",
+		Remaining:  []rune(`field:n"ame" is not great`),
 	})
 
 	runner("startWithNumericCharacter", TestCase{
-		Input:      []rune(`lbl:42"Name" is not great`),
+		Input:      []rune(`field:42"Name" is not great`),
 		TokenType:  lexer.TokenTypeIllegal,
-		TokenValue: "expecting identifier's opening double quote character",
-		Remaining:  []rune(`lbl:42"Name" is not great`),
+		TokenValue: "expecting field to start with double quote character",
+		Remaining:  []rune(`field:42"Name" is not great`),
 	})
 
 	runner("startWithSpecialCharacter", TestCase{
-		Input:      []rune(`lbl:>"Name" is not great`),
+		Input:      []rune(`field:>"Name" is not great`),
 		TokenType:  lexer.TokenTypeIllegal,
-		TokenValue: "expecting identifier's opening double quote character",
-		Remaining:  []rune(`lbl:>"Name" is not great`),
+		TokenValue: "expecting field to start with double quote character",
+		Remaining:  []rune(`field:>"Name" is not great`),
 	})
 
 	runner("startWithSpace", TestCase{
-		Input:      []rune(`lbl: "Name" is not great`),
+		Input:      []rune(`field: "Name" is not great`),
 		TokenType:  lexer.TokenTypeIllegal,
-		TokenValue: "expecting identifier's opening double quote character",
-		Remaining:  []rune(`lbl: "Name" is not great`),
+		TokenValue: "expecting field to start with double quote character",
+		Remaining:  []rune(`field: "Name" is not great`),
 	})
 
 	runner("neverEnds", TestCase{
-		Input:      []rune(`lbl:"Name is not great`),
+		Input:      []rune(`field:"Name is not great`),
 		TokenType:  lexer.TokenTypeIllegal,
-		TokenValue: "expecting identifier's closing double quote character",
-		Remaining:  []rune(`lbl:"Name is not great`),
+		TokenValue: "expecting field to end with a double quote character",
+		Remaining:  []rune(`field:"Name is not great`),
 	})
 }
