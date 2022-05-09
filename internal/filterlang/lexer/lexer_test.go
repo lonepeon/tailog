@@ -11,7 +11,7 @@ import (
 func TestLex(t *testing.T) {
 	lex := lexer.NewLexer(`
 	field:name == field:"another identifier" || 12 == field:something
-	42 != 13.37 && field:id == field:"something else"
+	42 != 13.37 && field:id == "something else"
 	`)
 
 	token := lex.NextToken()
@@ -67,7 +67,7 @@ func TestLex(t *testing.T) {
 	testutils.AssertEqualString(t, "", token.Value, "unexpected token value")
 
 	token = lex.NextToken()
-	testutils.AssertEqualString(t, lexer.TokenTypeField.String(), token.Type.String(), "unexpected token type")
+	testutils.AssertEqualString(t, lexer.TokenTypeString.String(), token.Type.String(), "unexpected token type")
 	testutils.AssertEqualString(t, "something else", token.Value, "unexpected token value")
 
 	token = lex.NextToken()

@@ -20,6 +20,7 @@ func NewLexer(content string) *Lexer {
 			OrSpecialCharacter,
 			DoubleQuotesField,
 			NoQuotesField,
+			String,
 			Number,
 		},
 	}
