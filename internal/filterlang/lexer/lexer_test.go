@@ -10,8 +10,8 @@ import (
 // nolint:funlen
 func TestLex(t *testing.T) {
 	lex := lexer.NewLexer(`
-	name == "another identifier" || 12 == something
-	42 != 13.37 && id == "something else"
+	lbl:name == lbl:"another identifier" || 12 == lbl:something
+	42 != 13.37 && lbl:id == lbl:"something else"
 	`)
 
 	token := lex.NextToken()

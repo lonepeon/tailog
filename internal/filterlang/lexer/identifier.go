@@ -8,7 +8,7 @@ var (
 type doubleQuotesIdentifier struct{}
 
 func (i doubleQuotesIdentifier) Matches(content []rune) bool {
-	return startWithFn(content, isRune('"'))
+	return startWith(content, []rune(`lbl:"`))
 }
 
 func (i doubleQuotesIdentifier) Read(content []rune) (Token, []rune) {
@@ -16,11 +16,11 @@ func (i doubleQuotesIdentifier) Read(content []rune) (Token, []rune) {
 		return NewTokenEOF(), content
 	}
 
-	if !startWithFn(content, func(c rune) bool { return c == '"' }) {
+	if !startWith(content, []rune(`lbl:"`)) {
 		return NewTokenIllegal("expecting identifier's opening double quote character"), content
 	}
 
-	identifier, remaining, found := readWhile(content[1:], func(c rune) bool { return c != '"' })
+	identifier, remaining, found := readWhile(content[5:], func(c rune) bool { return c != '"' })
 
 	if !found {
 		return NewTokenIllegal("didn't detect any identifier"), content
@@ -36,7 +36,7 @@ func (i doubleQuotesIdentifier) Read(content []rune) (Token, []rune) {
 type noQuotesIdentifier struct{}
 
 func (i noQuotesIdentifier) Matches(content []rune) bool {
-	return startWithFn(content, isAlpha)
+	return startWith(content, []rune(`lbl:`)) && startWithFn(content[4:], isAlpha)
 }
 
 func (i noQuotesIdentifier) Read(content []rune) (Token, []rune) {
@@ -44,11 +44,15 @@ func (i noQuotesIdentifier) Read(content []rune) (Token, []rune) {
 		return NewTokenEOF(), content
 	}
 
-	if !startWithFn(content, isAlpha) {
+	if !startWith(content, []rune(`lbl:`)) {
 		return NewTokenIllegal("expecting identifier to start with an alphabetic character"), content
 	}
 
-	identifier, remaining, found := readWhile(content, func(c rune) bool {
+	if !startWithFn(content[4:], isAlpha) {
+		return NewTokenIllegal("expecting identifier to start with an alphabetic character"), content
+	}
+
+	identifier, remaining, found := readWhile(content[4:], func(c rune) bool {
 		return isAlphaNum(c) || c == '_'
 	})
 

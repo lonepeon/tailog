@@ -22,27 +22,32 @@ func TestLexIdentifierNoQuotesMatches(t *testing.T) {
 	}
 
 	runner("startWithAlphaCharacter", TestCase{
-		Input:   []rune(`name`),
+		Input:   []rune(`lbl:name`),
 		Matches: true,
 	})
 
 	runner("startWithUnderscore", TestCase{
-		Input:   []rune(`_name`),
+		Input:   []rune(`lbl:_name`),
 		Matches: false,
 	})
 
 	runner("startWithNumericCharacter", TestCase{
-		Input:   []rune(`42name`),
+		Input:   []rune(`lbl:42name`),
 		Matches: false,
 	})
 
 	runner("startWithDash", TestCase{
-		Input:   []rune(`-name`),
+		Input:   []rune(`lbl:-name`),
 		Matches: false,
 	})
 
 	runner("startWithSpace", TestCase{
-		Input:   []rune(` name`),
+		Input:   []rune(`lbl: name`),
+		Matches: false,
+	})
+
+	runner("startWithEmpty", TestCase{
+		Input:   []rune(``),
 		Matches: false,
 	})
 }
@@ -66,49 +71,49 @@ func TestLexIdentifierNoQuotesRead(t *testing.T) {
 	}
 
 	runner("onlyIdentifier", TestCase{
-		Input:      []rune(`name`),
+		Input:      []rune(`lbl:name`),
 		TokenType:  lexer.TokenTypeIdentifier,
 		TokenValue: "name",
 		Remaining:  []rune(""),
 	})
 
 	runner("alphaLowercaseCharacters", TestCase{
-		Input:      []rune(`name is great`),
+		Input:      []rune(`lbl:name is great`),
 		TokenType:  lexer.TokenTypeIdentifier,
 		TokenValue: "name",
 		Remaining:  []rune(" is great"),
 	})
 
 	runner("alphaUppercaseCharacters", TestCase{
-		Input:      []rune(`NAME IS GREAT`),
+		Input:      []rune(`lbl:NAME IS GREAT`),
 		TokenType:  lexer.TokenTypeIdentifier,
 		TokenValue: "NAME",
 		Remaining:  []rune(" IS GREAT"),
 	})
 
 	runner("alphanumCharacters", TestCase{
-		Input:      []rune(`Name42 is great`),
+		Input:      []rune(`lbl:Name42 is great`),
 		TokenType:  lexer.TokenTypeIdentifier,
 		TokenValue: "Name42",
 		Remaining:  []rune(" is great"),
 	})
 
 	runner("alphanumAndUnderscoreCharacters", TestCase{
-		Input:      []rune(`Name_42 is great`),
+		Input:      []rune(`lbl:Name_42 is great`),
 		TokenType:  lexer.TokenTypeIdentifier,
 		TokenValue: "Name_42",
 		Remaining:  []rune(" is great"),
 	})
 
 	runner("alphanumAndDashCharacters", TestCase{
-		Input:      []rune(`Name-42 is great`),
+		Input:      []rune(`lbl:Name-42 is great`),
 		TokenType:  lexer.TokenTypeIdentifier,
 		TokenValue: "Name",
 		Remaining:  []rune("-42 is great"),
 	})
 
 	runner("alphanumAndDotCharacters", TestCase{
-		Input:      []rune(`Name.42 is great`),
+		Input:      []rune(`lbl:Name.42 is great`),
 		TokenType:  lexer.TokenTypeIdentifier,
 		TokenValue: "Name",
 		Remaining:  []rune(".42 is great"),
@@ -122,24 +127,24 @@ func TestLexIdentifierNoQuotesRead(t *testing.T) {
 	})
 
 	runner("startWithNumericCharacter", TestCase{
-		Input:      []rune("42Name is not great"),
+		Input:      []rune("lbl:42Name is not great"),
 		TokenType:  lexer.TokenTypeIllegal,
 		TokenValue: "expecting identifier to start with an alphabetic character",
-		Remaining:  []rune("42Name is not great"),
+		Remaining:  []rune("lbl:42Name is not great"),
 	})
 
 	runner("startWithSpecialCharacter", TestCase{
-		Input:      []rune(">Name is not great"),
+		Input:      []rune("lbl:>Name is not great"),
 		TokenType:  lexer.TokenTypeIllegal,
 		TokenValue: "expecting identifier to start with an alphabetic character",
-		Remaining:  []rune(">Name is not great"),
+		Remaining:  []rune("lbl:>Name is not great"),
 	})
 
 	runner("startWithSpace", TestCase{
-		Input:      []rune(" Name is not great"),
+		Input:      []rune("lbl: Name is not great"),
 		TokenType:  lexer.TokenTypeIllegal,
 		TokenValue: "expecting identifier to start with an alphabetic character",
-		Remaining:  []rune(" Name is not great"),
+		Remaining:  []rune("lbl: Name is not great"),
 	})
 }
 
@@ -158,32 +163,32 @@ func TestLexIdentifierDoubleQuotesMatches(t *testing.T) {
 	}
 
 	runner("startWithDoubleQuote", TestCase{
-		Input:   []rune(`"name"`),
+		Input:   []rune(`lbl:"name"`),
 		Matches: true,
 	})
 
 	runner("startWithAlphaCharacter", TestCase{
-		Input:   []rune(`name`),
+		Input:   []rune(`lbl:name`),
 		Matches: false,
 	})
 
 	runner("startWithUnderscore", TestCase{
-		Input:   []rune(`_name`),
+		Input:   []rune(`lbl:_name`),
 		Matches: false,
 	})
 
 	runner("startWithNumericCharacter", TestCase{
-		Input:   []rune(`42name`),
+		Input:   []rune(`lbl:42name`),
 		Matches: false,
 	})
 
 	runner("startWithDash", TestCase{
-		Input:   []rune(`-name`),
+		Input:   []rune(`lbl:-name`),
 		Matches: false,
 	})
 
 	runner("startWithSpace", TestCase{
-		Input:   []rune(` name`),
+		Input:   []rune(`lbl: name`),
 		Matches: false,
 	})
 }
@@ -207,70 +212,70 @@ func TestLexIdentifierDoubleQuotesRead(t *testing.T) {
 	}
 
 	runner("onlyIdentifier", TestCase{
-		Input:      []rune(`"name"`),
+		Input:      []rune(`lbl:"name"`),
 		TokenType:  lexer.TokenTypeIdentifier,
 		TokenValue: "name",
 		Remaining:  []rune(""),
 	})
 
 	runner("alphaLowercaseCharacters", TestCase{
-		Input:      []rune(`"name" is great`),
+		Input:      []rune(`lbl:"name" is great`),
 		TokenType:  lexer.TokenTypeIdentifier,
 		TokenValue: "name",
 		Remaining:  []rune(" is great"),
 	})
 
 	runner("alphaUppercaseCharacters", TestCase{
-		Input:      []rune(`"NAME" IS GREAT`),
+		Input:      []rune(`lbl:"NAME" IS GREAT`),
 		TokenType:  lexer.TokenTypeIdentifier,
 		TokenValue: "NAME",
 		Remaining:  []rune(" IS GREAT"),
 	})
 
 	runner("alphanumCharacters", TestCase{
-		Input:      []rune(`"Name42" is great`),
+		Input:      []rune(`lbl:"Name42" is great`),
 		TokenType:  lexer.TokenTypeIdentifier,
 		TokenValue: "Name42",
 		Remaining:  []rune(" is great"),
 	})
 
 	runner("alphanumAndUnderscoreCharacters", TestCase{
-		Input:      []rune(`"Name_42" is great`),
+		Input:      []rune(`lbl:"Name_42" is great`),
 		TokenType:  lexer.TokenTypeIdentifier,
 		TokenValue: "Name_42",
 		Remaining:  []rune(" is great"),
 	})
 
 	runner("alphanumAndDashCharacters", TestCase{
-		Input:      []rune(`"Name-42" is great`),
+		Input:      []rune(`lbl:"Name-42" is great`),
 		TokenType:  lexer.TokenTypeIdentifier,
 		TokenValue: "Name-42",
 		Remaining:  []rune(" is great"),
 	})
 
 	runner("alphanumAndDotCharacters", TestCase{
-		Input:      []rune(`"Name.42" is great`),
+		Input:      []rune(`lbl:"Name.42" is great`),
 		TokenType:  lexer.TokenTypeIdentifier,
 		TokenValue: "Name.42",
 		Remaining:  []rune(" is great"),
 	})
 
 	runner("alphanumAndSpaceCharacters", TestCase{
-		Input:      []rune(`"Name 42" is great`),
+		Input:      []rune(`lbl:"Name 42" is great`),
 		TokenType:  lexer.TokenTypeIdentifier,
 		TokenValue: "Name 42",
 		Remaining:  []rune(" is great"),
 	})
 
 	runner("startsWithNumCharacter", TestCase{
-		Input:      []rune(`"42Name" is great`),
+		Input:      []rune(`lbl:"42Name" is great`),
 		TokenType:  lexer.TokenTypeIdentifier,
 		TokenValue: "42Name",
 		Remaining:  []rune(" is great"),
 	})
 
 	runner("alphanumAndSpecialCharCharacters", TestCase{
-		Input:      []rune(`"Name/42" is great`),
+		Input:      []rune(`lbl:"Name/42" is great`),
 		TokenType:  lexer.TokenTypeIdentifier,
 		TokenValue: "Name/42",
 		Remaining:  []rune(" is great"),
@@ -284,37 +289,37 @@ func TestLexIdentifierDoubleQuotesRead(t *testing.T) {
 	})
 
 	runner("startWithAlphaCharacter", TestCase{
-		Input:      []rune(`n"ame" is not great`),
+		Input:      []rune(`lbl:n"ame" is not great`),
 		TokenType:  lexer.TokenTypeIllegal,
 		TokenValue: "expecting identifier's opening double quote character",
-		Remaining:  []rune(`n"ame" is not great`),
+		Remaining:  []rune(`lbl:n"ame" is not great`),
 	})
 
 	runner("startWithNumericCharacter", TestCase{
-		Input:      []rune(`42"Name" is not great`),
+		Input:      []rune(`lbl:42"Name" is not great`),
 		TokenType:  lexer.TokenTypeIllegal,
 		TokenValue: "expecting identifier's opening double quote character",
-		Remaining:  []rune(`42"Name" is not great`),
+		Remaining:  []rune(`lbl:42"Name" is not great`),
 	})
 
 	runner("startWithSpecialCharacter", TestCase{
-		Input:      []rune(`>"Name" is not great`),
+		Input:      []rune(`lbl:>"Name" is not great`),
 		TokenType:  lexer.TokenTypeIllegal,
 		TokenValue: "expecting identifier's opening double quote character",
-		Remaining:  []rune(`>"Name" is not great`),
+		Remaining:  []rune(`lbl:>"Name" is not great`),
 	})
 
 	runner("startWithSpace", TestCase{
-		Input:      []rune(` "Name" is not great`),
+		Input:      []rune(`lbl: "Name" is not great`),
 		TokenType:  lexer.TokenTypeIllegal,
 		TokenValue: "expecting identifier's opening double quote character",
-		Remaining:  []rune(` "Name" is not great`),
+		Remaining:  []rune(`lbl: "Name" is not great`),
 	})
 
 	runner("neverEnds", TestCase{
-		Input:      []rune(`"Name is not great`),
+		Input:      []rune(`lbl:"Name is not great`),
 		TokenType:  lexer.TokenTypeIllegal,
 		TokenValue: "expecting identifier's closing double quote character",
-		Remaining:  []rune(`"Name is not great`),
+		Remaining:  []rune(`lbl:"Name is not great`),
 	})
 }
