@@ -10,8 +10,8 @@ import (
 
 func TestWatchMultipleLine(t *testing.T) {
 	decoder := decodingtest.NewDecoder()
-	decoder.AddEntry(decodingtest.NewEntry(map[string]string{"msg": "log 1"}))
-	decoder.AddEntry(decodingtest.NewEntry(map[string]string{"msg": "log 2"}))
+	decoder.AddEntry(decodingtest.NewEntry(t, map[string]interface{}{"msg": "log 1"}))
+	decoder.AddEntry(decodingtest.NewEntry(t, map[string]interface{}{"msg": "log 2"}))
 	watcher := decoding.NewWatcher(decoder)
 	watcher.Start()
 	defer watcher.Stop()

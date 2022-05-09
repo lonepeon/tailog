@@ -16,13 +16,13 @@ func TestCircularBufferLenNoData(t *testing.T) {
 func TestCircularBufferLenNotFilled(t *testing.T) {
 	buf := decoding.NewCircularBuffer(3)
 
-	buf.Push(decodingtest.NewEntry(map[string]string{
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{
 		"label1": "value 1",
 		"label2": "value 2",
 	}))
 	testutils.AssertEqualInt(t, 1, buf.Len(), "invalid buffer size")
 
-	buf.Push(decodingtest.NewEntry(map[string]string{
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{
 		"label1": "value 3",
 		"label2": "value 4",
 	}))
@@ -32,25 +32,25 @@ func TestCircularBufferLenNotFilled(t *testing.T) {
 func TestCircularBufferLenFilled(t *testing.T) {
 	buf := decoding.NewCircularBuffer(3)
 
-	buf.Push(decodingtest.NewEntry(map[string]string{
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{
 		"label1": "value 1",
 		"label2": "value 2",
 	}))
 	testutils.AssertEqualInt(t, 1, buf.Len(), "invalid buffer size")
 
-	buf.Push(decodingtest.NewEntry(map[string]string{
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{
 		"label1": "value 3",
 		"label2": "value 4",
 	}))
 	testutils.AssertEqualInt(t, 2, buf.Len(), "invalid buffer size")
 
-	buf.Push(decodingtest.NewEntry(map[string]string{
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{
 		"label1": "value 5",
 		"label2": "value 6",
 	}))
 	testutils.AssertEqualInt(t, 3, buf.Len(), "invalid buffer size")
 
-	buf.Push(decodingtest.NewEntry(map[string]string{
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{
 		"label1": "value 7",
 		"label2": "value 8",
 	}))
@@ -59,8 +59,8 @@ func TestCircularBufferLenFilled(t *testing.T) {
 
 func TestCircularBufferAtNotNegative(t *testing.T) {
 	buf := decoding.NewCircularBuffer(3)
-	buf.Push(decodingtest.NewEntry(map[string]string{"label1": "value 1"}))
-	buf.Push(decodingtest.NewEntry(map[string]string{"label2": "value 2"}))
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label1": "value 1"}))
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label2": "value 2"}))
 
 	entry, found := buf.At(-1)
 	testutils.AssertEqualBool(t, false, found, "unexpected entry at index %s", entry)
@@ -68,8 +68,8 @@ func TestCircularBufferAtNotNegative(t *testing.T) {
 
 func TestCircularBufferAtTooBig(t *testing.T) {
 	buf := decoding.NewCircularBuffer(3)
-	buf.Push(decodingtest.NewEntry(map[string]string{"label1": "value 1"}))
-	buf.Push(decodingtest.NewEntry(map[string]string{"label2": "value 2"}))
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label1": "value 1"}))
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label2": "value 2"}))
 
 	entry, found := buf.At(2)
 	testutils.AssertEqualBool(t, false, found, "unexpected entry at index %s", entry)
@@ -77,8 +77,8 @@ func TestCircularBufferAtTooBig(t *testing.T) {
 
 func TestCircularBufferAtValidNotFilled(t *testing.T) {
 	buf := decoding.NewCircularBuffer(3)
-	buf.Push(decodingtest.NewEntry(map[string]string{"label1": "value 1"}))
-	buf.Push(decodingtest.NewEntry(map[string]string{"label2": "value 2"}))
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label1": "value 1"}))
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label2": "value 2"}))
 
 	entry, found := buf.At(1)
 	testutils.RequireEqualBool(t, true, found, "expecting entry to be found")
@@ -90,10 +90,10 @@ func TestCircularBufferAtValidNotFilled(t *testing.T) {
 
 func TestCircularBufferAtValidFilled(t *testing.T) {
 	buf := decoding.NewCircularBuffer(3)
-	buf.Push(decodingtest.NewEntry(map[string]string{"label1": "value 1"}))
-	buf.Push(decodingtest.NewEntry(map[string]string{"label2": "value 2"}))
-	buf.Push(decodingtest.NewEntry(map[string]string{"label3": "value 3"}))
-	buf.Push(decodingtest.NewEntry(map[string]string{"label4": "value 4"}))
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label1": "value 1"}))
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label2": "value 2"}))
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label3": "value 3"}))
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label4": "value 4"}))
 
 	entry, found := buf.At(2)
 	testutils.RequireEqualBool(t, true, found, "expecting entry to be found")
@@ -111,8 +111,8 @@ func TestCircularBufferEntriesNoData(t *testing.T) {
 
 func TestCircularBufferEntriesNotFilled(t *testing.T) {
 	buf := decoding.NewCircularBuffer(3)
-	buf.Push(decodingtest.NewEntry(map[string]string{"label1": "value 1"}))
-	buf.Push(decodingtest.NewEntry(map[string]string{"label2": "value 2"}))
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label1": "value 1"}))
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label2": "value 2"}))
 
 	entries := buf.Entries()
 	testutils.RequireEqualInt(t, 2, len(entries), "invalid entries size")
@@ -126,10 +126,10 @@ func TestCircularBufferEntriesNotFilled(t *testing.T) {
 
 func TestCircularBufferEntriesFilled(t *testing.T) {
 	buf := decoding.NewCircularBuffer(3)
-	buf.Push(decodingtest.NewEntry(map[string]string{"label1": "value 1"}))
-	buf.Push(decodingtest.NewEntry(map[string]string{"label2": "value 2"}))
-	buf.Push(decodingtest.NewEntry(map[string]string{"label3": "value 3"}))
-	buf.Push(decodingtest.NewEntry(map[string]string{"label4": "value 4"}))
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label1": "value 1"}))
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label2": "value 2"}))
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label3": "value 3"}))
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label4": "value 4"}))
 
 	entries := buf.Entries()
 	testutils.RequireEqualInt(t, 3, len(entries), "invalid entries size")
@@ -147,18 +147,18 @@ func TestCircularBufferEntriesFilled(t *testing.T) {
 func TestCircularBufferPush(t *testing.T) {
 	buf := decoding.NewCircularBuffer(3)
 
-	evicted := buf.Push(decodingtest.NewEntry(map[string]string{"label1": "value 1"}))
+	evicted := buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label1": "value 1"}))
 	testutils.AssertEqualBool(t, false, evicted, "didn't expect value to be evicted")
 
-	evicted = buf.Push(decodingtest.NewEntry(map[string]string{"label2": "value 2"}))
+	evicted = buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label2": "value 2"}))
 	testutils.AssertEqualBool(t, false, evicted, "didn't expect value to be evicted")
 
-	evicted = buf.Push(decodingtest.NewEntry(map[string]string{"label3": "value 3"}))
+	evicted = buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label3": "value 3"}))
 	testutils.AssertEqualBool(t, false, evicted, "didn't expect value to be evicted")
 
-	evicted = buf.Push(decodingtest.NewEntry(map[string]string{"label4": "value 4"}))
+	evicted = buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label4": "value 4"}))
 	testutils.AssertEqualBool(t, true, evicted, "didn't expect value to be evicted")
 
-	evicted = buf.Push(decodingtest.NewEntry(map[string]string{"label4": "value 5"}))
+	evicted = buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label4": "value 5"}))
 	testutils.AssertEqualBool(t, true, evicted, "didn't expect value to be evicted")
 }

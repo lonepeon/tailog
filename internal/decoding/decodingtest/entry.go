@@ -1,13 +1,26 @@
 package decodingtest
 
-import "github.com/lonepeon/tailog/internal/decoding"
+import (
+	"testing"
+
+	"github.com/lonepeon/tailog/internal/decoding"
+)
 
 type Entry []decoding.Field
 
-func NewEntry(entry map[string]string) Entry {
+func NewEntry(t *testing.T, entry map[string]interface{}) Entry {
 	fields := make([]decoding.Field, 0, len(entry))
 	for label, value := range entry {
-		fields = append(fields, decoding.NewFieldString(label, value))
+		switch v := value.(type) {
+		case string:
+			fields = append(fields, decoding.NewFieldString(label, v))
+		case int:
+			fields = append(fields, decoding.NewFieldNumber(label, float64(v)))
+		case float64:
+			fields = append(fields, decoding.NewFieldNumber(label, v))
+		default:
+			t.Fatalf("can't build an entry with a field of type '%T'", value)
+		}
 	}
 
 	return Entry(fields)

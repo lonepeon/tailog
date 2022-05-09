@@ -19,9 +19,18 @@ func (f FieldNumber) Name() string {
 }
 
 func (f FieldNumber) Compare(other interface{}) FieldComparison {
-	otherValue, ok := toFloat64(other)
-	if !ok {
-		return FieldComparisonGreaterThan
+	var otherValue float64
+
+	otherFieldNumber, ok := other.(FieldNumber)
+	if ok {
+		otherValue = otherFieldNumber.value
+	} else {
+		numberValue, ok := toFloat64(other)
+		if !ok {
+			return FieldComparisonGreaterThan
+		}
+
+		otherValue = numberValue
 	}
 
 	if f.value > otherValue {

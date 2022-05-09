@@ -18,9 +18,18 @@ func (f FieldString) Name() string {
 }
 
 func (f FieldString) Compare(other interface{}) FieldComparison {
-	otherValue, ok := other.(string)
-	if !ok {
-		return FieldComparisonGreaterThan
+	var otherValue string
+
+	otherFieldString, ok := other.(FieldString)
+	if ok {
+		otherValue = otherFieldString.value
+	} else {
+		stringValue, ok := other.(string)
+		if !ok {
+			return FieldComparisonGreaterThan
+		}
+
+		otherValue = stringValue
 	}
 
 	rst := strings.Compare(f.value, otherValue)
