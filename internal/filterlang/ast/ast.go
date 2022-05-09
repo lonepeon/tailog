@@ -21,8 +21,8 @@ func (s Comparison) String() string {
 
 var (
 	ComparisonUndefined = Comparison{name: "undefined"}
-	ComparisonEqual     = Comparison{name: "equal"}
-	ComparisonNotEqual  = Comparison{name: "not equal"}
+	ComparisonEqual     = Comparison{name: "=="}
+	ComparisonNotEqual  = Comparison{name: "!="}
 )
 
 type LabelValue struct {
@@ -51,8 +51,8 @@ func NewNumberValue(value float64) NumberValue {
 	return NumberValue{value: value}
 }
 
-func (l NumberValue) Value() float64 {
-	return l.value
+func (n NumberValue) Value() float64 {
+	return n.value
 }
 
 func (n NumberValue) String() string {
@@ -60,6 +60,24 @@ func (n NumberValue) String() string {
 }
 
 func (n NumberValue) isValue() {}
+
+type StringValue struct {
+	value string
+}
+
+func NewStringValue(value string) StringValue {
+	return StringValue{value: value}
+}
+
+func (s StringValue) Value() string {
+	return s.value
+}
+
+func (s StringValue) String() string {
+	return fmt.Sprintf("%q", s.value)
+}
+
+func (s StringValue) isValue() {}
 
 type Valuer interface {
 	isValue()
@@ -91,7 +109,7 @@ func (c ConditionAnd) Right() Condition {
 }
 
 func (c ConditionAnd) String() string {
-	return fmt.Sprintf("(%s and %s)", c.left, c.right)
+	return fmt.Sprintf("(%s && %s)", c.left, c.right)
 }
 
 type ConditionOr struct {
@@ -114,7 +132,7 @@ func (c ConditionOr) Right() Condition {
 }
 
 func (c ConditionOr) String() string {
-	return fmt.Sprintf("(%s or %s)", c.left, c.right)
+	return fmt.Sprintf("(%s || %s)", c.left, c.right)
 }
 
 type ConditionExpression struct {
@@ -227,6 +245,8 @@ func readValue(token lexer.Token) (Valuer, error) {
 	switch token.Type {
 	case lexer.TokenTypeField:
 		return NewLabelValue(token.Value), nil
+	case lexer.TokenTypeString:
+		return NewStringValue(token.Value), nil
 	case lexer.TokenTypeNumber:
 		number, err := strconv.ParseFloat(token.Value, 64)
 		if err != nil {

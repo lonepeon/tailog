@@ -112,9 +112,9 @@ func TestAndOrOperators(t *testing.T) {
 		lexer.NewTokenEqual(),
 		lexer.NewTokenNumber("200"),
 		lexer.NewTokenAnd(),
-		lexer.NewTokenField("user.id"),
+		lexer.NewTokenField("http.method"),
 		lexer.NewTokenNotEqual(),
-		lexer.NewTokenNumber("42"),
+		lexer.NewTokenString("POST"),
 		lexer.NewTokenOr(),
 		lexer.NewTokenField("user.id"),
 		lexer.NewTokenNotEqual(),
@@ -130,9 +130,9 @@ func TestAndOrOperators(t *testing.T) {
 					ast.NewNumberValue(200),
 				),
 				ast.NewConditionExpression(
-					ast.NewLabelValue("user.id"),
+					ast.NewLabelValue("http.method"),
 					ast.ComparisonNotEqual,
-					ast.NewNumberValue(42),
+					ast.NewStringValue("POST"),
 				),
 			),
 			ast.NewConditionExpression(
@@ -161,9 +161,9 @@ func TestOrAndOperators(t *testing.T) {
 		lexer.NewTokenEqual(),
 		lexer.NewTokenNumber("200"),
 		lexer.NewTokenAnd(),
-		lexer.NewTokenField("user.id"),
+		lexer.NewTokenField("http.method"),
 		lexer.NewTokenNotEqual(),
-		lexer.NewTokenNumber("1337"),
+		lexer.NewTokenString("POST"),
 	})
 
 	expectedAST := ast.AST{
@@ -180,9 +180,9 @@ func TestOrAndOperators(t *testing.T) {
 					ast.NewNumberValue(200),
 				),
 				ast.NewConditionExpression(
-					ast.NewLabelValue("user.id"),
+					ast.NewLabelValue("http.method"),
 					ast.ComparisonNotEqual,
-					ast.NewNumberValue(1337),
+					ast.NewStringValue("POST"),
 				),
 			),
 		),
