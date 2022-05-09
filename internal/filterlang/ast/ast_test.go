@@ -19,7 +19,7 @@ func TestSimpleCondition(t *testing.T) {
 
 			expectedAST := ast.AST{
 				Condition: ast.NewConditionExpression(
-					ast.NewLabelValue("http.status"),
+					ast.NewFieldValue("http.status"),
 					expectedComparison,
 					ast.NewNumberValue(200),
 				),
@@ -52,12 +52,12 @@ func TestAndOperator(t *testing.T) {
 	expectedAST := ast.AST{
 		Condition: ast.NewConditionAnd(
 			ast.NewConditionExpression(
-				ast.NewLabelValue("http.status"),
+				ast.NewFieldValue("http.status"),
 				ast.ComparisonEqual,
 				ast.NewNumberValue(200),
 			),
 			ast.NewConditionExpression(
-				ast.NewLabelValue("user.id"),
+				ast.NewFieldValue("user.id"),
 				ast.ComparisonNotEqual,
 				ast.NewNumberValue(42),
 			),
@@ -86,12 +86,12 @@ func TestOrOperator(t *testing.T) {
 	expectedAST := ast.AST{
 		Condition: ast.NewConditionOr(
 			ast.NewConditionExpression(
-				ast.NewLabelValue("http.status"),
+				ast.NewFieldValue("http.status"),
 				ast.ComparisonEqual,
 				ast.NewNumberValue(200),
 			),
 			ast.NewConditionExpression(
-				ast.NewLabelValue("user.id"),
+				ast.NewFieldValue("user.id"),
 				ast.ComparisonNotEqual,
 				ast.NewNumberValue(42),
 			),
@@ -125,18 +125,18 @@ func TestAndOrOperators(t *testing.T) {
 		Condition: ast.NewConditionOr(
 			ast.NewConditionAnd(
 				ast.NewConditionExpression(
-					ast.NewLabelValue("http.status"),
+					ast.NewFieldValue("http.status"),
 					ast.ComparisonEqual,
 					ast.NewNumberValue(200),
 				),
 				ast.NewConditionExpression(
-					ast.NewLabelValue("http.method"),
+					ast.NewFieldValue("http.method"),
 					ast.ComparisonNotEqual,
 					ast.NewStringValue("POST"),
 				),
 			),
 			ast.NewConditionExpression(
-				ast.NewLabelValue("user.id"),
+				ast.NewFieldValue("user.id"),
 				ast.ComparisonNotEqual,
 				ast.NewNumberValue(1337),
 			),
@@ -169,18 +169,18 @@ func TestOrAndOperators(t *testing.T) {
 	expectedAST := ast.AST{
 		Condition: ast.NewConditionOr(
 			ast.NewConditionExpression(
-				ast.NewLabelValue("user.id"),
+				ast.NewFieldValue("user.id"),
 				ast.ComparisonNotEqual,
 				ast.NewNumberValue(42),
 			),
 			ast.NewConditionAnd(
 				ast.NewConditionExpression(
-					ast.NewLabelValue("http.status"),
+					ast.NewFieldValue("http.status"),
 					ast.ComparisonEqual,
 					ast.NewNumberValue(200),
 				),
 				ast.NewConditionExpression(
-					ast.NewLabelValue("http.method"),
+					ast.NewFieldValue("http.method"),
 					ast.ComparisonNotEqual,
 					ast.NewStringValue("POST"),
 				),

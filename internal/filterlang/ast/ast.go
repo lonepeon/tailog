@@ -25,23 +25,23 @@ var (
 	ComparisonNotEqual  = Comparison{name: "!="}
 )
 
-type LabelValue struct {
+type FieldValue struct {
 	value string
 }
 
-func NewLabelValue(labelName string) LabelValue {
-	return LabelValue{value: labelName}
+func NewFieldValue(fieldName string) FieldValue {
+	return FieldValue{value: fieldName}
 }
 
-func (l LabelValue) Value() string {
+func (l FieldValue) Value() string {
 	return l.value
 }
 
-func (l LabelValue) String() string {
-	return fmt.Sprintf("label(%q)", l.value)
+func (l FieldValue) String() string {
+	return fmt.Sprintf("field:%q", l.value)
 }
 
-func (l LabelValue) isValue() {}
+func (l FieldValue) isValue() {}
 
 type NumberValue struct {
 	value float64
@@ -244,7 +244,7 @@ func readExpression(lex Lexer) (ConditionExpression, error) {
 func readValue(token lexer.Token) (Valuer, error) {
 	switch token.Type {
 	case lexer.TokenTypeField:
-		return NewLabelValue(token.Value), nil
+		return NewFieldValue(token.Value), nil
 	case lexer.TokenTypeString:
 		return NewStringValue(token.Value), nil
 	case lexer.TokenTypeNumber:
