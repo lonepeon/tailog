@@ -1,8 +1,6 @@
 package filterlang
 
 import (
-	"fmt"
-
 	"github.com/lonepeon/tailog/internal/decoding"
 	"github.com/lonepeon/tailog/internal/filterlang/ast"
 	"github.com/lonepeon/tailog/internal/filterlang/lexer"
@@ -15,7 +13,7 @@ type Interpreter struct {
 func Parse(source string) (Interpreter, error) {
 	tree, err := ast.Parse(lexer.NewLexer(source))
 	if err != nil {
-		return Interpreter{}, fmt.Errorf("can't parse source: %v", err)
+		return Interpreter{}, err
 	}
 
 	return Interpreter{tree: tree}, nil
@@ -53,7 +51,6 @@ func getField(entry decoding.Entry, valuer ast.Valuer) (decoding.Field, bool) {
 
 func executeExpression(entry decoding.Entry, cond ast.ConditionExpression) bool {
 	field1, ok := getField(entry, cond.Left())
-	fmt.Println("field1", field1)
 	if !ok {
 		return false
 	}
@@ -62,14 +59,13 @@ func executeExpression(entry decoding.Entry, cond ast.ConditionExpression) bool 
 	if !ok {
 		return false
 	}
-	fmt.Println("field2", field2)
 
 	comp := field1.Compare(field2)
-	fmt.Println("comp", comp)
 
 	if comp == decoding.FieldComparisonEqual && cond.Comparison() == ast.ComparisonEqual {
 		return true
 	}
+
 	if comp != decoding.FieldComparisonEqual && cond.Comparison() == ast.ComparisonNotEqual {
 		return true
 	}

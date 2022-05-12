@@ -30,6 +30,10 @@ func (t *Table) AddLogEntry(e decoding.Entry) {
 	t.content.AddLogEntry(e)
 }
 
+func (t *Table) FilterFunc(fn decoding.FilterFunc) {
+	t.content.FilterFunc(fn)
+}
+
 func (t *Table) scrollUp() {
 	row, col := t.GetOffset()
 	t.SetOffset(row-1, col)

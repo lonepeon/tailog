@@ -103,47 +103,6 @@ func TestCircularBufferAtValidFilled(t *testing.T) {
 	testutils.AssertEqualString(t, "value 4", field.Value(), "unexpected field value")
 }
 
-func TestCircularBufferEntriesNoData(t *testing.T) {
-	buf := decoding.NewCircularBuffer(3)
-	entries := buf.Entries()
-	testutils.AssertEqualInt(t, 0, len(entries), "invalid entries size")
-}
-
-func TestCircularBufferEntriesNotFilled(t *testing.T) {
-	buf := decoding.NewCircularBuffer(3)
-	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label1": "value 1"}))
-	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label2": "value 2"}))
-
-	entries := buf.Entries()
-	testutils.RequireEqualInt(t, 2, len(entries), "invalid entries size")
-
-	_, ok := entries[0].Field("label1")
-	testutils.AssertEqualBool(t, true, ok, "expecting to find label1 field")
-
-	_, ok = entries[1].Field("label2")
-	testutils.AssertEqualBool(t, true, ok, "expecting to find label2 field")
-}
-
-func TestCircularBufferEntriesFilled(t *testing.T) {
-	buf := decoding.NewCircularBuffer(3)
-	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label1": "value 1"}))
-	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label2": "value 2"}))
-	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label3": "value 3"}))
-	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label4": "value 4"}))
-
-	entries := buf.Entries()
-	testutils.RequireEqualInt(t, 3, len(entries), "invalid entries size")
-
-	_, ok := entries[0].Field("label2")
-	testutils.AssertEqualBool(t, true, ok, "expecting to find label2 field")
-
-	_, ok = entries[1].Field("label3")
-	testutils.AssertEqualBool(t, true, ok, "expecting to find label3 field")
-
-	_, ok = entries[2].Field("label4")
-	testutils.AssertEqualBool(t, true, ok, "expecting to find label4 field")
-}
-
 func TestCircularBufferPush(t *testing.T) {
 	buf := decoding.NewCircularBuffer(3)
 
@@ -161,4 +120,32 @@ func TestCircularBufferPush(t *testing.T) {
 
 	evicted = buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label4": "value 5"}))
 	testutils.AssertEqualBool(t, true, evicted, "didn't expect value to be evicted")
+}
+
+func TestCircularBufferPushAddingFilter(t *testing.T) {
+	buf := decoding.NewCircularBuffer(3)
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label": "keep-me"}))
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label": "hide-me"}))
+	buf.Push(decodingtest.NewEntry(t, map[string]interface{}{"label": "keep-me"}))
+	testutils.RequireEqualInt(t, 3, buf.Len(), "unexpected buffer size")
+
+	buf.ReplaceFilter(func(e decoding.Entry) bool {
+		field, ok := e.Field("label")
+		testutils.RequireEqualBool(t, true, ok, "didn't expect an entry with no label field")
+		return field.Compare("keep-me") == decoding.FieldComparisonEqual
+	})
+
+	testutils.RequireEqualInt(t, 2, buf.Len(), "unexpected buffer size after filter")
+
+	entry, found := buf.At(0)
+	testutils.RequireEqualBool(t, true, found, "expecting entry to be found")
+	field, found := entry.Field("label")
+	testutils.RequireEqualBool(t, true, found, "expecting field to be found")
+	testutils.AssertEqualString(t, "keep-me", field.Value(), "unexpected field value")
+
+	entry, found = buf.At(1)
+	testutils.RequireEqualBool(t, true, found, "expecting entry to be found")
+	field, found = entry.Field("label")
+	testutils.RequireEqualBool(t, true, found, "expecting field to be found")
+	testutils.AssertEqualString(t, "keep-me", field.Value(), "unexpected field value")
 }

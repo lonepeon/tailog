@@ -56,6 +56,10 @@ func (l *LogEntries) AddLogEntry(entry decoding.Entry) {
 	l.buffer.Push(entry)
 }
 
+func (l *LogEntries) FilterFunc(fn decoding.FilterFunc) {
+	l.buffer.ReplaceFilter(fn)
+}
+
 func (l *LogEntries) buildCell(value string) *tview.TableCell {
 	cell := tview.NewTableCell(value)
 	cell.SetTextColor(tcell.ColorDefault)
